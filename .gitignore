@@ -1,0 +1,25 @@
+# Secrets / env
+.env
+
+# Dependencies
+/vendor/
+/node_modules/
+
+# Build / cache
+/dist/
+/build/
+/coverage/
+/.cache/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Local DB files (if any)
+*.sqlite
+*.db
