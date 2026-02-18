@@ -1,0 +1,168 @@
+/* 
+  Root variables for the card system.
+  Keeping colours + spacing here makes it much easier to tweak the theme later
+  without hunting through the entire file.
+*/
+:root {
+  --card-panel-color: #151521; /* card background */
+  --card-text-color: #f4f4f7; /* main readable text */
+  --card-secondary-color: #b8b8c6; /* secondary text (dates, meta info) */
+  --card-border-color: rgba(255, 255, 255, 0.1); /* subtle borders */
+  --card-radius-size: 16px; /* consistent rounded corners */
+  --card-gap: clamp(12px, 2vw, 20px); /* responsive spacing between cards */
+  --card-pad: clamp(14px, 2vw, 18px); /* responsive internal padding */
+}
+
+/* Page intro text sizing scales slightly with viewport */
+.page-header h1 {
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  margin: 0 0 0.25rem;
+}
+
+.page-header p {
+  margin: 0 0 1.25rem;
+  color: var(--card-secondary-color);
+  max-width: 60ch; /* keeps text readable on large screens */
+}
+
+/* Section wrapper (Popular, Latest, Blog) */
+.block {
+  margin-top: 1.75rem;
+  padding: var(--card-pad);
+}
+
+/* Section title + link aligned on one row */
+.block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.block-head h2 {
+  margin: 0;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+}
+
+/* "View all" style links */
+.block-link {
+  color: var(--card-secondary-color);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.block-link:hover {
+  color: var(--card-text-color);
+}
+
+/* 
+  Card grid layout.
+  auto-fit + minmax allows it to adapt nicely from mobile to desktop
+  without media queries.
+*/
+.cards {
+  display: grid;
+  gap: var(--card-gap);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+/* 
+  Base card styling.
+  Subtle elevation + hover lift to give it a bit of depth.
+*/
+.card {
+  background: var(--card-panel-color);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-radius-size);
+  overflow: hidden; /* keeps images within rounded corners */
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.25);
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px); /* slight lift effect */
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Event thumbnail image */
+.card-media {
+  width: 100%;
+  height: 160px;
+  object-fit: cover; /* avoids image distortion */
+  display: block;
+}
+
+/* Internal content wrapper */
+.card-body {
+  padding: var(--card-pad);
+  display: grid;
+  gap: 0.4rem;
+}
+
+/* Small category label (Workshop, Update, etc.) */
+.badge {
+  width: fit-content;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px; /* pill shape */
+  border: 1px solid var(--card-border-color);
+  color: var(--card-text-color);
+}
+
+/* Slight visual variation when needed */
+.badge--accent {
+  color: var(--card-text-color);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* Event/blog title */
+.card-title {
+  color: var(--card-text-color);
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+/* Date + location */
+.card-meta {
+  margin: 0;
+  color: var(--card-secondary-color);
+  font-size: 0.92rem;
+}
+
+/* Short description */
+.card-text {
+  margin: 0;
+  color: var(--card-secondary-color);
+  line-height: 1.5;
+}
+
+/* "Read more" link */
+.card-cta {
+  margin-top: 0.35rem;
+  display: inline-flex;
+  width: fit-content;
+  color: var(--card-text-color);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding-bottom: 2px;
+}
+
+.card-cta:hover {
+  border-bottom-color: rgba(255, 255, 255, 0.6);
+}
+
+/* 
+  Slightly wider minimum cards for compact sections (Latest events)
+*/
+.cards--compact {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Row-style card variation (no image layout) */
+.card--row .card-body {
+  padding: var(--card-pad);
+}

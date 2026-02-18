@@ -1,0 +1,118 @@
+/* 
+  Navigation-related variables.
+  Makes it easier to tweak spacing/icon size without touching multiple rules.
+*/
+:root {
+  --nav-pad: 0.75rem; /* overall nav padding */
+  --nav-gap: 0.75rem; /* space between nav items */
+  --icon-size: 1.6rem; /* main icon size */
+  --logo-height: 2.5rem; /* keeps logo consistent */
+}
+
+/* 
+  Page layout:
+  Header (nav) on top,
+  main content stretches,
+  footer stays at bottom.
+*/
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Main navigation bar */
+nav {
+  background: red; /* temporary colour – easy to spot while designing */
+  display: flex;
+  align-items: center;
+  gap: var(--nav-gap);
+  padding: var(--nav-pad);
+  border-radius: 1.25rem;
+  margin: 0.5rem;
+}
+
+/* Logo sizing – height controlled, width auto to avoid distortion */
+.logo {
+  padding-left: 1rem;
+  height: var(--logo-height);
+  width: auto;
+  display: block;
+}
+
+/* Push account icon to the far right */
+.account {
+  margin-left: auto;
+}
+
+/* 
+  Nav item structure:
+  icon stacked above label.
+  Padding adjusted to visually balance spacing with logo.
+*/
+.nav-item {
+  font-size: var(--icon-size);
+  color: white;
+  text-decoration: none;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: 1.25rem 0 0 1rem;
+  line-height: 1;
+}
+
+/* 
+  Hide label text by default.
+  Only icon is visible until hover.
+*/
+.nav-text {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  font-size: 1.6rem;
+}
+
+/* 
+  On hover, reveal text with slight slide-down animation.
+  Gives a subtle dropdown feel without using JS.
+*/
+.nav-item:hover .nav-text {
+  opacity: 1;
+  transform: translateY(5px);
+}
+
+/* Main content area */
+main {
+  background: rgb(255, 255, 255);
+}
+
+/* Footer layout:
+   stacked vertically and centered */
+footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* Social icons row */
+.social-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-direction: row;
+}
+
+/* Newsletter text alignment */
+.newsletter-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.newsletter-email-label {
+  visibility: hidden;
+}
