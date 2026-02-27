@@ -8,3 +8,14 @@ Used for navbar and UI icons
 Logo Flaticon.com
 https://www.flaticon.com/free-icon/billboard_1069071?term=event&page=3&position=77&origin=search&related_id=1069071
 -->
+<!--
+To mitigate Cross-Site Scripting (XSS) vulnerabilities, all dynamic output is escaped using PHP’s htmlspecialchars() function, which converts special characters into HTML entities, preventing browser execution of injected scripts
+https://www.php.net/manual/en/function.htmlspecialchars.php
+https://owasp.org/www-community/attacks/xss/
+-->
+<!--
+Mod Rewrite
+Clean URLs were implemented using Apache’s mod_rewrite module via a .htaccess configuration file, redirecting all non-existent file and directory requests to a single entry point (index.php), following the Front Controller design pattern
+https://httpd.apache.org/docs/2.4/howto/htaccess.html
+https://httpd.apache.org/docs/2.4/mod/mod_rewrite.html
+-->
