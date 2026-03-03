@@ -11,7 +11,12 @@ class Router
     public function getController(string $name): object
     {
         $map = [
-            'home' => \controllers\HomeController::class
+            'home' => \controllers\HomeController::class,
+            'debug' => \controllers\DebugController::class,
+            'account' => \controllers\AccountController::class,
+            'event' => \controllers\EventController::class,
+            'booking' => \controllers\BookingControllers::class
+
         ];
 
         if (!array_key_exists($name, $map)) {
