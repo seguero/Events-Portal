@@ -1,4 +1,4 @@
-      <!-- Quick intro / page header -->
+    <!-- Page title -->
       <header class="page-header">
         <h1>Welcome</h1>
         <p>

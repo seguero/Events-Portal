@@ -1,0 +1,162 @@
+/* Page title container */
+.page-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Main layout: sidebar filters on the left, event content on the right */
+.events-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 2rem;
+}
+
+/* Wrapper for search bar and event list */
+.events-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-right: 2rem;
+}
+
+/* Search input styling */
+.events-search input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Grid layout for event cards */
+.events-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.4rem;
+}
+
+/* Sidebar container for filter groups */
+.events-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Individual collapsible filter sections */
+.filter-group {
+  border: 1px solid var(--card-border-color);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+/* Filter section header */
+.filter-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.9rem 1rem;
+  font-weight: 600;
+  user-select: none;
+  position: relative;
+}
+
+/* Hide default browser arrow for <details> */
+.filter-summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Custom expand/collapse icon */
+.filter-summary::after {
+  content: "+";
+  position: absolute;
+  right: 1rem;
+  transition: transform 0.2s ease;
+}
+
+/* Change icon when filter group is open */
+.filter-group[open] .filter-summary::after {
+  content: "−";
+}
+
+/* Container for filter inputs */
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0 1rem 1rem;
+}
+
+/* Individual checkbox/radio option */
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Custom accent colour for form controls */
+.filter-option input {
+  accent-color: #8aa2ff;
+}
+
+/* Dropdown used in sorting filter */
+.filter-select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--card-border-color);
+  background: #151521;
+  color: var(--card-text-color);
+}
+
+/*
+  Horizontal event card layout
+  Image on the left and event information on the right.
+*/
+.card-event {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0;
+  align-items: stretch;
+}
+
+/* Event image styling */
+.card-event .card-media {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+/* Event content container */
+.card-event .card-body {
+  padding: var(--card-pad);
+  display: grid;
+  grid-template-rows: auto auto auto 1fr auto;
+  gap: 0.35rem;
+}
+
+/* Event date styling */
+.card-event .card-meta {
+  font-size: 0.9rem;
+  color: var(--card-text-color);
+  opacity: 0.9;
+}
+
+/* Event location styling */
+.card-event .card-text {
+  font-size: 0.9rem;
+}
+
+/* Call-to-action link styled as button */
+.card-event .card-cta {
+  margin-top: 0.4rem;
+  border: 1px solid var(--card-border-color);
+  border-radius: 8px;
+  padding: 4px 10px;
+  border-bottom: none;
+}
+
+/* Hover effect for CTA */
+.card-event .card-cta:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}

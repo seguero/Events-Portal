@@ -58,16 +58,16 @@
       <!-- Account link:
            If user is logged in, show their first name instead of "Login" -->
       <?php $currentUser = $_SESSION['user'] ?? null; ?>
-      <a class="account nav-item" href="/account">
+      <a class="account <?= $currentUser ? 'account--logged-in' : 'nav-item' ?>" href="/account">
         <?php if ($currentUser): ?>
-        <span class="logged-in-user">
+          <i class="fa-solid fa-user"></i>
+          <span class="logged-in-user">
             <?= htmlspecialchars($currentUser['firstname']) . ' ' . htmlspecialchars($currentUser['lastname']) ?>
-        </span>
+          </span>
         <?php else: ?>
-            <span class="logged-in-user">Login</span>
+          <i class="fa-solid fa-user"></i>
+          <span class="nav-text">Account</span>
         <?php endif; ?>
-        <i class="fa-solid fa-user"></i>
-        <span class="nav-text">Account</span>
       </a>
       <!-- If user is logged in, show a logout icon -->
       <?php if ($currentUser): ?>

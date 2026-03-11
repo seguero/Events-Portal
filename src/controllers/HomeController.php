@@ -10,7 +10,6 @@ class HomeController
             'template' => 'home.html.php',
             'styles' => ['home.css'],
             'variables' => [
-                'message' => 'MVC routing works'
             ]
         ];
     }

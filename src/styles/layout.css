@@ -24,7 +24,7 @@ body {
 
 /* Main navigation bar */
 nav {
-  background: red; /* temporary colour – easy to spot while designing */
+  background-color: #151521; /* temporary colour – easy to spot while designing */
   display: flex;
   align-items: center;
   gap: var(--nav-gap);
@@ -44,6 +44,28 @@ nav {
 /* Push account icon to the far right */
 .account {
   margin-left: auto;
+}
+
+/* Align logger in user info */
+.account--logged-in {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: white;
+  text-decoration: none;
+  padding: 0.4rem 0.6rem;
+}
+
+.logged-in-user {
+  font-size: 0.95rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.account--logged-in i {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 /* 
@@ -71,7 +93,7 @@ nav {
   opacity: 0;
   transform: translateY(-10px);
   transition: all 0.3s ease;
-  font-size: 1.6rem;
+  font-size: 1.25rem;
 }
 
 /* 
@@ -80,7 +102,7 @@ nav {
 */
 .nav-item:hover .nav-text {
   opacity: 1;
-  transform: translateY(5px);
+  transform: translateY(3px);
 }
 
 /* Main content area */
