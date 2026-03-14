@@ -1,0 +1,89 @@
+/*
+Admin Form Styles
+Styles used for the admin create/edit event forms.
+Defines layout, spacing, and button styling for the admin interface.
+*/
+
+/* Main admin container centered on the page */
+.admin-panel {
+  max-width: 700px;
+  margin: 2rem auto;
+}
+
+/* Header section containing title and navigation button */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+/* Back button styling */
+.btn-back {
+  text-decoration: none;
+  color: #555;
+}
+
+/* Admin form layout using vertical flexbox */
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* Container for each form field */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Label styling for form fields */
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* Input and textarea styling */
+.form-group input,
+.form-group textarea {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Highlight input fields when focused */
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+/* Container for form action buttons */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Primary button used for saving or updating events */
+.btn-save {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Hover effect for save button */
+.btn-save:hover {
+  background: #256628;
+}
+
+/* Cancel button styling */
+.btn-cancel {
+  text-decoration: none;
+  color: #555;
+  padding: 0.6rem 1rem;
+}

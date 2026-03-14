@@ -26,7 +26,8 @@ class Router
             'debug' => \controllers\DebugController::class,
             'account' => \controllers\AccountController::class,
             'events' => \controllers\EventController::class,
-            'booking' => \controllers\BookingControllers::class
+            'booking' => \controllers\BookingController::class,
+            'admin' => \controllers\AdminController::class
         ];
 
         /* Return 404 if controller does not exist in the map */

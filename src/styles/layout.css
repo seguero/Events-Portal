@@ -46,7 +46,7 @@ nav {
   margin-left: auto;
 }
 
-/* Align logger in user info */
+/* Align logged in user info */
 .account--logged-in {
   margin-left: auto;
   display: flex;
@@ -98,7 +98,6 @@ nav {
 
 /* 
   On hover, reveal text with slight slide-down animation.
-  Gives a subtle dropdown feel without using JS.
 */
 .nav-item:hover .nav-text {
   opacity: 1;

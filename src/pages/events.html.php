@@ -23,6 +23,19 @@
                 </div>
             </details>
 
+            <details class="filter-group" open>
+                <summary class="filter-summary">Category</summary>
+
+                <div class="filter-options">
+                    <?php foreach ($categories as $category): ?>
+                        <label class="filter-option">
+                            <input type="checkbox" name="category[]" value="<?= htmlspecialchars($category) ?>">
+                            <?= htmlspecialchars($category) ?>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            </details>
+
             <!-- Location filter populated dynamically from database values -->
             <details class="filter-group" open>
                 <summary class="filter-summary">Location</summary>

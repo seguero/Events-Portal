@@ -51,6 +51,11 @@ class EventTable
         return $this->table->findDistinct('location');
     }
 
+     public function findCategories(): array
+    {
+        return $this->table->findDistinct('category');
+    }
+
     /* Insert or update an event record */
     public function save(array $eventData): string|int
     {

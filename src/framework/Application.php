@@ -82,6 +82,7 @@ class Application
         $title = $page['title'] ?? 'Untitled';
         $variables = $page['variables'] ?? [];
         $styles = $page['styles'] ?? [];
+        $scripts = $page['scripts'] ?? [];
 
         // Render inner page content (view file)
         $content = $this->render(

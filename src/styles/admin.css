@@ -1,0 +1,82 @@
+/*
+Admin Events Table Styles
+Styles used for the admin dashboard where events are listed.
+Defines layout, search input styling, table appearance,
+and action button colours.
+*/
+
+/* Main container for the admin panel */
+.admin-panel {
+  max-width: 1000px;
+  margin: 2rem auto;
+}
+
+/* Header containing page title and add event button */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Button used to navigate to the create event form */
+.btn-add {
+  background: #2e7d32;
+  color: white;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+/* Search input used to filter events */
+.events-search input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+/* Table layout for displaying event records */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Table cell spacing and alignment */
+.admin-table th,
+.admin-table td {
+  padding: 0.75rem;
+  text-align: left;
+}
+
+/* Table header styling */
+.admin-table thead {
+  background: #f4f4f4;
+}
+
+/* Row divider between table records */
+.admin-table tr {
+  border-bottom: 1px solid #ddd;
+}
+
+/* Highlight row when hovering for better readability */
+.admin-table tr:hover {
+  background: #f9f9f9;
+}
+
+/* Container for edit/delete action icons */
+.actions {
+  text-align: center;
+}
+
+/* Edit icon colour */
+.edit {
+  color: #1976d2;
+  margin-right: 10px;
+}
+
+/* Delete icon colour */
+.delete {
+  color: #d32f2f;
+}

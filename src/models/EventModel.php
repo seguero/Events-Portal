@@ -13,8 +13,11 @@ class EventModel
     /* Primary key */
     public ?int $eventid = null;
 
-    /* Event category/type */
+    /* Event type */
     public string $event_type = '';
+
+    /* Event category */
+    public string $category = '';
 
     /* Event title */
     public string $title = '';

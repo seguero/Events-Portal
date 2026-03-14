@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="/styles/global.css" />
     <link rel="stylesheet" href="/styles/layout.css" />
     <link rel="stylesheet" href="/styles/cards.css" />
+
     <!-- 
       Page-specific styles.
       The controller can pass an array called 'styles'.
@@ -25,9 +26,29 @@
         - Output a <link> tag dynamically
         - htmlspecialchars() prevents XSS if someone injects bad data
     -->
+
     <?php if (!empty($styles)): ?>
       <?php foreach ($styles as $style): ?>
         <link rel="stylesheet" href="/styles/<?= htmlspecialchars($style) ?>">
+      <?php endforeach; ?>
+    <?php endif; ?>
+     
+    <!-- 
+      Page-specific scripts.
+      The controller can pass an array called 'scripts'.
+      Example from controller:
+        'styles' => ['account.js']
+
+      If $scripts exists and is not empty:
+        - Loop through each filename
+        - Output a <script> tag dynamically
+        - htmlspecialchars() prevents XSS if someone injects bad data
+    -->
+      
+    <?php if (!empty($scripts)): ?>
+
+      <?php foreach ($scripts as $script): ?>
+        <script src="/javascript/<?= htmlspecialchars($script) ?>" defer></script>
       <?php endforeach; ?>
     <?php endif; ?>
 
@@ -54,7 +75,14 @@
         <i class="fa-solid fa-envelope"></i>
         <span class="nav-text">Contact</span>
       </a>
-
+      <!-- Admin Panel
+           If the logged in user has an admin role, display the admin panel link -->
+      <?php if(!empty($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
+        <a class="nav-item" href="/admin">
+          <i class="fa-solid fa-shield-alt"></i>
+          <span class="nav-text">Admin</span>
+        </a>
+      <?php endif; ?>
       <!-- Account link:
            If user is logged in, show their first name instead of "Login" -->
       <?php $currentUser = $_SESSION['user'] ?? null; ?>
@@ -63,7 +91,7 @@
           <i class="fa-solid fa-user"></i>
           <span class="logged-in-user">
             <?= htmlspecialchars($currentUser['firstname']) . ' ' . htmlspecialchars($currentUser['lastname']) ?>
-          </span>
+          </span> 
         <?php else: ?>
           <i class="fa-solid fa-user"></i>
           <span class="nav-text">Account</span>

@@ -44,3 +44,48 @@ Minor debugging required; resolved quickly without affecting functionality.
     -create booking system for standard role users
     -finish the views of other pages (blog, about, contact)
     -once functionality is fully achieved, commence front-end design
+
+6th Coding Session
+This session focused on extending user account functionality and starting the admin event management interface. The work improved both usability and maintainability by adding profile update features, access control for admin-only pages, and clean page layouts for account and admin sections.
+
+-implemented user profile management for logged-in users, including updating first name, last name, email, and password
+-added password verification before allowing password changes to improve account security
+-updated session data after profile changes so the navigation and account details stay in sync without requiring a new login
+-added a dedicated profile page layout with a simple and functional form for editing user information
+-created a cleaner account page structure with separate login and register forms
+-implemented dynamic tab switching between login and register forms on the account page using JavaScript
+-configured page-specific JavaScript loading through the layout so scripts can be attached only where needed
+-started the admin panel for event management with role-based access control so only admin users can access admin routes
+-added requireAdmin() protection in AdminController to redirect unauthorised users from admin pages
+-built the admin events page with a table layout showing event details
+-added links for admin actions including create, edit, and delete
+-created a dedicated create event page with a structured form for entering title, type, category, date, location, and description
+-implemented event creation logic in AdminController to save submitted event data into the database
+-started the edit event page setup so it matches the same layout and structure as the create event page
+-improved styling consistency by creating clean and functional layouts for profile, account, and admin-related pages
+-continued refining the overall MVC structure by keeping controllers responsible for request handling and models responsible for database access
+
+MINOR BLOCK
+
+Encountered a database error while implementing the profile update functionality:
+
+Error:
+PDOException: SQLSTATE[HY093]: Invalid parameter number
+
+Root cause:
+Mismatch between the SQL query placeholders and the parameters passed to PDOStatement::execute() in the reusable DatabaseHelper::update() method.
+
+Resolution:
+Adjusted the update query to use the actual table primary key placeholder so the SQL statement matched the record data correctly.
+
+Impact:
+Minor debugging required; profile update functionality was restored without affecting the rest of the CRUD system.
+
+    //Plan for next coding session
+    -add event specific view page with in-depth view and booking functionality
+    -use AJAX to display success and error messages without reloading the page for login, register, profile update, and admin actions
+    -connect public event search and filters to AJAX and JSON responses
+    -handle unauthorized page access with friendlier feedback messages
+    -create booking system for standard role users
+    -finish the views of other pages (blog, about, contact)
+    -once functionality is fully achieved, commence front-end design

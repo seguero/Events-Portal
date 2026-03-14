@@ -13,8 +13,8 @@ VALUES (
 );
 
 -- DUMMY EVENTS
-INSERT INTO events (event_type, title, description, event_date, location, image_path)
+INSERT INTO events (category, event_type, title, description, event_date, location, image_path)
 VALUES
-('Workshop','Web Development Workshop', 'Hands-on workshop covering modern PHP structure and routing.', '2026-03-10 18:00:00', 'Northampton', '/assets/placeholder.jpg'),
-('Webinar','Docker for Beginners', 'Learn container basics and how to run reproducible dev environments.', '2026-03-15 17:30:00', 'Wellingborough', '/assets/placeholder.jpg'),
-('Conference','Web App Security Basics', 'Intro to common vulnerabilities like XSS and how to mitigate them.', '2026-03-20 19:00:00', 'Kettering', '/assets/placeholder.jpg');
+('Web Development','Workshop','Web Development Workshop', 'Hands-on workshop covering modern PHP structure and routing.', '2026-03-10 18:00:00', 'Northampton', '/assets/placeholder.jpg'),
+('Server side development','Webinar','Docker for Beginners', 'Learn container basics and how to run reproducible dev environments.', '2026-03-15 17:30:00', 'Wellingborough', '/assets/placeholder.jpg'),
+('Internet Security','Conference','Web App Security Basics', 'Intro to common vulnerabilities like XSS and how to mitigate them.', '2026-03-20 19:00:00', 'Kettering', '/assets/placeholder.jpg');

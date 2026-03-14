@@ -21,15 +21,90 @@ class AccountController
         $this->users = new UserTable();
     }
 
-    /* Render the account page containing login and register forms */
-    public function index(): array
+    /* Render the account page containing login and register forms
+       Redirect to profile if user is already logged in   
+    */
+   public function index(): array
     {
+        if (!empty($_SESSION['loggedIn'])) {
+            return ['redirect' => '/account/profile'];
+        }
+
         return [
             'title' => 'Account',
             'template' => 'account.html.php',
             'styles' => ['account.css'],
+            'scripts' => ['account.js'],
             'variables' => []
         ];
+    }
+
+    /* Render the profile page containing update details form
+       Redirect to account if user is not logged in   
+    */
+    public function profile(): array
+    {
+    if (empty($_SESSION['loggedIn'])) {
+        return ['redirect' => '/account'];
+    }
+
+    return [
+        'title' => 'Profile',
+        'template' => 'profile.html.php',
+        'styles' => ['profile.css'],
+        'variables' => [
+            'user' => $_SESSION['user']
+        ]
+    ];
+    }
+
+    /* Update user information */
+    public function update(): array
+    {
+        $firstname   = trim($_POST['firstname'] ?? '');
+        $lastname    = trim($_POST['lastname'] ?? '');
+        $email       = trim($_POST['email'] ?? '');
+        $oldpassword = $_POST['oldpassword'] ?? '';
+        $newpassword = $_POST['newpassword'] ?? '';
+
+        $user = $this->users->findById($_SESSION['user']['userid']);
+
+        if (!$user) {
+            return ['redirect' => '/account'];
+        }
+
+        if ($newpassword !== '') {
+            if (!password_verify($oldpassword, $user->password)) {
+                return [
+                    'title' => 'Profile',
+                    'template' => 'profile.html.php',
+                    'styles' => ['profile.css'],
+                    'variables' => [
+                        'user' => $_SESSION['user'],
+                        'error' => 'Current password is incorrect'
+                    ]
+                ];
+            }
+        }
+
+        $data = [
+            'userid' => $user->userid,
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'email' => $email
+        ];
+
+        if ($newpassword !== '') {
+            $data['password'] = password_hash($newpassword, PASSWORD_DEFAULT);
+        }
+
+        $this->users->save($data);
+
+        $_SESSION['user']['firstname'] = $firstname;
+        $_SESSION['user']['lastname'] = $lastname;
+        $_SESSION['user']['email'] = $email;
+
+        return ['redirect' => '/account/profile'];
     }
 
     /* Handle registration, validate input, and create a new user */
@@ -99,7 +174,8 @@ class AccountController
             'userid' => $user->userid,
             'firstname' => $user->firstname,
             'lastname' => $user->lastname,
-            'email' => $user->email
+            'email' => $user->email,
+            'role' => $user->role
         ];
 
         return ['redirect' => '/home'];
@@ -131,6 +207,7 @@ class AccountController
             'title' => 'Account',
             'template' => 'account.html.php',
             'styles' => ['account.css'],
+            'scripts' => ['account.js'],
             'variables' => [
                 'error' => $msg,
                 'old' => [
@@ -149,6 +226,7 @@ class AccountController
             'title' => 'Account',
             'template' => 'account.html.php',
             'styles' => ['account.css'],
+            'scripts' => ['account.js'],
             'variables' => [
                 'login_error' => $msg,
                 'login_old' => [

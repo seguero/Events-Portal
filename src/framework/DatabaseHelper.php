@@ -122,9 +122,7 @@ class DatabaseHelper
 
         $sql = "UPDATE {$this->table}
                 SET " . implode(', ', $fields) . "
-                WHERE {$this->primaryKey} = :primaryKey";
-
-        $record['primaryKey'] = $record[$this->primaryKey];
+                WHERE {$this->primaryKey} = :{$this->primaryKey}";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($record);
