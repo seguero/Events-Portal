@@ -1,0 +1,95 @@
+/* Page container */
+.bookings-page {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem 3rem;
+}
+
+/* Two-column layout */
+.bookings-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+/* Section headings */
+.bookings-column h2 {
+  margin-bottom: 1rem;
+}
+
+/* Empty message box */
+.empty-state {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 1rem;
+  color: #666;
+}
+
+/* Booking card */
+.booking-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+/* Card title */
+.booking-card h3 {
+  margin-bottom: 1rem;
+}
+
+/* Card text */
+.booking-card p {
+  margin: 0.5rem 0;
+}
+
+/* Upcoming highlight */
+.booking-card.upcoming {
+  border-left: 4px solid #1976d2;
+}
+
+/* Past styling */
+.booking-card.past {
+  border-left: 4px solid #999;
+  opacity: 0.9;
+}
+
+/* Button container */
+.booking-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* Shared button styles */
+.booking-actions a,
+.booking-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.2rem;
+  height: 42px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* View button */
+.view-button {
+  background: #1976d2;
+  color: #fff;
+}
+
+/* Cancel button */
+.cancel-button {
+  background: #d32f2f;
+  color: #fff;
+}
+
+/* Remove form spacing */
+.booking-actions form {
+  margin: 0;
+}

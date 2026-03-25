@@ -37,60 +37,49 @@ class Application
      */
     public function run(): void
     {
-        // Extract path from current request URI (ignore query string)
         $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $route = trim($path ?? '', '/');
 
-        // If no route provided ("/"), use default route
         if ($route === '') {
             $route = $this->router->defaultRoute();
         }
 
-        // Split route into controller/action (default action = "index")
-        [$controllerName, $action] = array_pad(
-            explode('/', $route, 2),
-            2,
-            'index'
-        );
+        $parts = explode('/', $route);
 
-        // Resolve controller instance from Router
+        $controllerName = $parts[0] ?? 'home';
+        $action = $parts[1] ?? 'index';
+        $params = array_slice($parts, 2);
+
         $controller = $this->router->getController($controllerName);
 
-        // Validate action method exists on controller
         if (!method_exists($controller, $action)) {
             http_response_code(404);
             exit('404 - Action not found');
         }
 
-        // Execute controller action
-        $page = $controller->$action();
+        $page = $controller->$action(...$params);
 
-        // Handle redirects (Post/Redirect/Get pattern support)
         if (isset($page['redirect'])) {
             header('Location: ' . $page['redirect']);
             exit;
         }
 
-        // Ensure controller returned valid response structure
         if (!is_array($page) || !isset($page['template'])) {
             throw new \RuntimeException(
                 'Controller must return an array with at least a template.'
             );
         }
 
-        // Extract view data with safe defaults
         $title = $page['title'] ?? 'Untitled';
         $variables = $page['variables'] ?? [];
         $styles = $page['styles'] ?? [];
         $scripts = $page['scripts'] ?? [];
 
-        // Render inner page content (view file)
         $content = $this->render(
             __DIR__ . '/../pages/' . $page['template'],
             $variables
         );
 
-        // Inject content into global layout
         require __DIR__ . '/../pages/layout.html.php';
     }
 

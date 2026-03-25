@@ -120,7 +120,7 @@
                         <p class="card-text"><?= htmlspecialchars($event->location) ?></p>
 
                         <!-- Placeholder link for future single event page -->
-                        <a class="card-cta" href="event.html">Read more</a>
+                        <a class="card-cta" href="/events/show/<?= htmlspecialchars($event->eventid) ?>">Read more</a>
                     </div>
                 </article>
             <?php endforeach; ?>

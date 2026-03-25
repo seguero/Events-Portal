@@ -75,6 +75,14 @@
         <i class="fa-solid fa-envelope"></i>
         <span class="nav-text">Contact</span>
       </a>
+      <!-- Bookings Page
+           If the user is logged in, display the bookings link -->
+      <?php if(!empty($_SESSION['user'])): ?>
+        <a class="nav-item" href="/booking">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span class="nav-text">Bookings</span>
+        </a>
+      <?php endif; ?>
       <!-- Admin Panel
            If the logged in user has an admin role, display the admin panel link -->
       <?php if(!empty($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
@@ -83,6 +91,7 @@
           <span class="nav-text">Admin</span>
         </a>
       <?php endif; ?>
+       </a>
       <!-- Account link:
            If user is logged in, show their first name instead of "Login" -->
       <?php $currentUser = $_SESSION['user'] ?? null; ?>

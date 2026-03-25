@@ -23,19 +23,15 @@ CREATE TABLE IF NOT EXISTS events (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS bookings (
-  bookingid INT AUTO_INCREMENT PRIMARY KEY,
-  userid INT NOT NULL,
-  eventid INT NOT NULL,
-  booked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE bookings (
+    bookingid INT AUTO_INCREMENT PRIMARY KEY,
+    userid INT NOT NULL,
+    eventid INT NOT NULL,
 
-  CONSTRAINT fk_bookings_user
-    FOREIGN KEY (userid) REFERENCES users(userid)
-    ON DELETE CASCADE,
+    booked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-  CONSTRAINT fk_bookings_event
-    FOREIGN KEY (eventid) REFERENCES events(eventid)
-    ON DELETE CASCADE,
+    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
+    FOREIGN KEY (eventid) REFERENCES events(eventid) ON DELETE CASCADE,
 
-  CONSTRAINT uq_booking UNIQUE (userid, eventid)
+    UNIQUE KEY unique_booking (userid, eventid)
 );

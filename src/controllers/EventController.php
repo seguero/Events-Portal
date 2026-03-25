@@ -2,6 +2,7 @@
 namespace controllers;
 
 use models\EventTable;
+use models\BookingTable;
 
 /*
  * EventController
@@ -15,10 +16,14 @@ class EventController
     /* Model used to interact with the events table */
     private EventTable $events;
 
-    /* Initialise the EventTable model */
+    /* Model used to interact with the bookings table */
+    private BookingTable $bookings;
+
+    /* Initialise the required models */
     public function __construct()
     {
         $this->events = new EventTable();
+        $this->bookings = new BookingTable();
     }
 
     /* Display the events listing page */
@@ -46,6 +51,45 @@ class EventController
                 'eventTypes' => $eventTypes,
                 'locations' => $locations,
                 'categories' => $categories
+            ]
+        ];
+    }
+
+    /* Show details for a single event */
+    public function show(int $id): array
+    {
+        /* Retrieve the selected event by ID */
+        $event = $this->events->findById($id);
+
+        /* Return 404 page if event does not exist */
+        if (!$event) {
+            return [
+                'title' => 'Event not found',
+                'template' => '404.html.php',
+                'styles' => ['events.css'],
+                'variables' => []
+            ];
+        }
+
+        /* Default booking state for guests */
+        $alreadyBooked = false;
+
+        /* Check whether the logged-in user has already booked this event */
+        if (isset($_SESSION['user'])) {
+            $alreadyBooked = $this->bookings->exists(
+                $_SESSION['user']['userid'],
+                $id
+            );
+        }
+
+        /* Return event detail page with booking state */
+        return [
+            'title' => $event->title,
+            'template' => 'event.html.php',
+            'styles' => ['event.css'],
+            'variables' => [
+                'event' => $event,
+                'alreadyBooked' => $alreadyBooked
             ]
         ];
     }
