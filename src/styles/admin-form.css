@@ -87,3 +87,29 @@ Defines layout, spacing, and button styling for the admin interface.
   color: #555;
   padding: 0.6rem 1rem;
 }
+
+/* Inline success/error messages for the create event form. */
+.form-message {
+  display: none;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.form-message.success,
+.form-message.error {
+  display: block;
+}
+
+.form-message.success {
+  background-color: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  color: #2e7d32;
+}
+
+.form-message.error {
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  color: #c62828;
+}

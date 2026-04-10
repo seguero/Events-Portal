@@ -15,8 +15,17 @@
         </a>
     </div>
 
+    <!-- Fallback error message for normal non-JavaScript form submissions. -->
+    <?php if (!empty($error)): ?>
+        <p class="form-message error"><?= htmlspecialchars($error) ?></p>
+    <?php endif; ?>
+
     <!-- Form used to update an existing event -->
-    <form class="admin-form" method="post" action="/admin/update">
+    <form id="editEventForm" class="admin-form" method="post" action="/admin/update">
+
+        <!-- Inline message area used by JavaScript to display success/error feedback
+             without reloading the page. -->
+        <p id="editEventMessage" class="form-message" aria-live="polite"></p>
 
         <!-- Hidden field containing the event ID so the correct record is updated -->
         <input type="hidden" name="eventid" value="<?= $event->eventid ?>">

@@ -28,13 +28,14 @@ class Router
             'events' => \controllers\EventController::class,
             'booking' => \controllers\BookingController::class,
             'admin' => \controllers\AdminController::class,
-            'event' => \controllers\EventController::class
+            'event' => \controllers\EventController::class,
+            'error' => \controllers\ErrorController::class
         ];
 
         /* Return 404 if controller does not exist in the map */
         if (!array_key_exists($name, $map)) {
-            http_response_code(404);
-            exit('404 - Controller not found');
+            $class = \controllers\ErrorController::class;
+            return new $class();
         }
 
         $class = $map[$name];

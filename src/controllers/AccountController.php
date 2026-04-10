@@ -44,21 +44,24 @@ class AccountController
     */
     public function profile(): array
     {
-    if (empty($_SESSION['loggedIn'])) {
-        return ['redirect' => '/account'];
+        if (empty($_SESSION['loggedIn'])) {
+            $_SESSION['flash_message'] = 'Please log in to view your profile.';
+            $_SESSION['flash_type'] = 'error';
+            return ['redirect' => '/account'];
+        }
+
+        return [
+            'title' => 'Profile',
+            'template' => 'profile.html.php',
+            'styles' => ['profile.css'],
+            'scripts' => ['profile.js'],
+            'variables' => [
+                'user' => $_SESSION['user']
+            ]
+        ];
     }
 
-    return [
-        'title' => 'Profile',
-        'template' => 'profile.html.php',
-        'styles' => ['profile.css'],
-        'variables' => [
-            'user' => $_SESSION['user']
-        ]
-    ];
-    }
-
-    /* Update user information */
+    /* Update profile information */
     public function update(): array
     {
         $firstname   = trim($_POST['firstname'] ?? '');
@@ -70,15 +73,70 @@ class AccountController
         $user = $this->users->findById($_SESSION['user']['userid']);
 
         if (!$user) {
+            if ($this->isAjaxRequest()) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'User could not be found.'
+                ], 404);
+            }
+
             return ['redirect' => '/account'];
+        }
+
+        if ($firstname === '' || $lastname === '' || $email === '') {
+            if ($this->isAjaxRequest()) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'First name, last name and email are required.'
+                ], 422);
+            }
+
+            return [
+                'title' => 'Profile',
+                'template' => 'profile.html.php',
+                'styles' => ['profile.css'],
+                'scripts' => ['profile.js'],
+                'variables' => [
+                    'user' => $_SESSION['user'],
+                    'error' => 'First name, last name and email are required.'
+                ]
+            ];
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if ($this->isAjaxRequest()) {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Please enter a valid email address.'
+                ], 422);
+            }
+
+            return [
+                'title' => 'Profile',
+                'template' => 'profile.html.php',
+                'styles' => ['profile.css'],
+                'scripts' => ['profile.js'],
+                'variables' => [
+                    'user' => $_SESSION['user'],
+                    'error' => 'Please enter a valid email address.'
+                ]
+            ];
         }
 
         if ($newpassword !== '') {
             if (!password_verify($oldpassword, $user->password)) {
+                if ($this->isAjaxRequest()) {
+                    $this->jsonResponse([
+                        'success' => false,
+                        'message' => 'Current password is incorrect.'
+                    ], 422);
+                }
+
                 return [
                     'title' => 'Profile',
                     'template' => 'profile.html.php',
                     'styles' => ['profile.css'],
+                    'scripts' => ['profile.js'],
                     'variables' => [
                         'user' => $_SESSION['user'],
                         'error' => 'Current password is incorrect'
@@ -103,6 +161,13 @@ class AccountController
         $_SESSION['user']['firstname'] = $firstname;
         $_SESSION['user']['lastname'] = $lastname;
         $_SESSION['user']['email'] = $email;
+
+        if ($this->isAjaxRequest()) {
+            $this->jsonResponse([
+                'success' => true,
+                'message' => 'Profile updated successfully.'
+            ]);
+        }
 
         return ['redirect' => '/account/profile'];
     }
@@ -142,6 +207,15 @@ class AccountController
             'password'  => $hash
         ]);
 
+        /* Return JSON success response for fetch requests instead of only redirecting. */
+        if ($this->isAjaxRequest()) {
+            $this->jsonResponse([
+                'success' => true,
+                'message' => 'Account created successfully.',
+                'redirect' => '/home'
+            ]);
+        }
+
         return ['redirect' => '/home'];
     }
 
@@ -178,6 +252,15 @@ class AccountController
             'role' => $user->role
         ];
 
+        /* Return JSON success response for fetch requests instead of only redirecting. */
+        if ($this->isAjaxRequest()) {
+            $this->jsonResponse([
+                'success' => true,
+                'message' => 'Login successful.',
+                'redirect' => '/home'
+            ]);
+        }
+
         return ['redirect' => '/home'];
     }
 
@@ -191,6 +274,10 @@ class AccountController
         session_unset();
         session_destroy();
 
+        session_start();
+        $_SESSION['flash_message'] = 'You have been logged out successfully.';
+        $_SESSION['flash_type'] = 'info';
+
         return ['redirect' => '/home'];
     }
 
@@ -203,6 +290,14 @@ class AccountController
     /* Return account page with registration error and previous form values */
     private function registerError(string $msg, string $firstname, string $lastname, string $email): array
     {
+        /* Return JSON error response for fetch requests so the page does not reload. */
+        if ($this->isAjaxRequest()) {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => $msg
+            ], 422);
+        }
+
         return [
             'title' => 'Account',
             'template' => 'account.html.php',
@@ -222,6 +317,14 @@ class AccountController
     /* Return account page with login error and previous email value */
     private function loginError(string $msg, string $email): array
     {
+        /* Return JSON error response for fetch requests so the page does not reload. */
+        if ($this->isAjaxRequest()) {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => $msg
+            ], 422);
+        }
+
         return [
             'title' => 'Account',
             'template' => 'account.html.php',
@@ -234,5 +337,21 @@ class AccountController
                 ]
             ]
         ];
+    }
+
+    /* Detect whether the request was sent through JavaScript fetch/AJAX. */
+    private function isAjaxRequest(): bool
+    {
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+               strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+
+    /* Send a JSON response and stop further output. */
+    private function jsonResponse(array $data, int $statusCode = 200): void
+    {
+        http_response_code($statusCode);
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
     }
 }

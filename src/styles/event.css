@@ -1,0 +1,105 @@
+/* Event Title */
+.event-title {
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+/* Event Container */
+.single-event {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background-color: #ffffff;
+}
+
+/* Event metadata */
+.single-event p {
+  margin: 0.5rem 0;
+  line-height: 1.5;
+}
+
+/* Highlight labels */
+.single-event strong {
+  color: #333;
+}
+
+/* Description spacing */
+.single-event p:last-of-type {
+  margin-top: 1rem;
+}
+
+/* Booking Form */
+
+.single-event form {
+  margin-top: 1.5rem;
+}
+
+.single-event button {
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #1976d2;
+  color: #ffffff;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.single-event button:hover {
+  background-color: #1565c0;
+}
+
+.single-event button:active {
+  transform: scale(0.98);
+}
+
+.single-event button:disabled {
+  background-color: #9e9e9e;
+  cursor: not-allowed;
+}
+
+/* Links */
+
+.single-event a {
+  display: inline-block;
+  margin-top: 1rem;
+  text-decoration: none;
+  color: #1976d2;
+}
+
+.single-event a:hover {
+  text-decoration: underline;
+}
+
+/* Inline success/error messages for booking. */
+
+.form-message {
+  display: none;
+  margin: 0 0 1rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.form-message.success,
+.form-message.error {
+  display: block;
+}
+
+.form-message.success {
+  background-color: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  color: #2e7d32;
+}
+
+.form-message.error {
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  color: #c62828;
+}

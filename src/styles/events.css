@@ -160,3 +160,12 @@
 .card-event .card-cta:hover {
   border-color: rgba(255, 255, 255, 0.3);
 }
+
+/* AJAX search feedback shown when there are no matching events or an error occurs */
+.events-empty {
+  grid-column: 1 / -1;
+  padding: 1rem;
+  border: 1px solid var(--card-border-color);
+  border-radius: 12px;
+  text-align: center;
+}

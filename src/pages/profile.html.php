@@ -10,7 +10,11 @@
 <?php endif; ?>
 
 <!-- Profile update form -->
-<form class="profile-update" action="/account/update" method="post">
+<form id="profileUpdateForm" class="profile-update" action="/account/update" method="post">
+
+    <!-- Inline message area used by JavaScript to display success/error feedback
+         without reloading the page. -->
+    <p id="profileMessage" class="form-message" aria-live="polite"></p>
 
     <!-- Page title -->
     <h1>User Profile</h1>

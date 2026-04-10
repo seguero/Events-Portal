@@ -1,0 +1,51 @@
+.error-page {
+  max-width: 700px;
+  margin: 4rem auto;
+  padding: 2rem;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.error-page h1 {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.error-page p {
+  margin-bottom: 1.5rem;
+  color: #555;
+}
+
+.error-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.error-actions a {
+  text-decoration: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 6px;
+}
+
+.btn-primary {
+  background: #1976d2;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1565c0;
+}
+
+.btn-secondary {
+  border: 1px solid #1976d2;
+  color: #1976d2;
+  background: transparent;
+}
+
+.btn-secondary:hover {
+  background: #f5f9ff;
+}

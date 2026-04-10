@@ -30,6 +30,11 @@ class BookingController
     {
         /* Must be logged in to view bookings */
         if (!isset($_SESSION['user'])) {
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+            $_SESSION['flash_message'] = 'You need to log in to view your bookings.';
+            $_SESSION['flash_type'] = 'info';
             return ['redirect' => '/account'];
         }
 
@@ -51,59 +56,76 @@ class BookingController
         ];
     }
 
+    private function isAjaxRequest(): bool
+    {
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+               strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+
+    private function jsonResponse(array $data, int $statusCode = 200): void
+    {
+        http_response_code($statusCode);
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
+    }
+
     /* Create a new booking for an event */
     public function store(): array
     {
-        /* Must be logged in */
-        if (!isset($_SESSION['user'])) {
-            return ['redirect' => '/account'];
+        if (empty($_SESSION['user'])) {
+            return $this->bookingError('Please log in to book this event.', '/account', 401);
         }
 
-        $userId = $_SESSION['user']['userid'];
-        $eventId = $_POST['eventid'] ?? null;
+        $eventid = (int) ($_POST['eventid'] ?? 0);
+        $userid = (int) $_SESSION['user']['userid'];
 
-        /* Validate event ID */
-        if (!$eventId) {
-            return ['redirect' => '/events'];
+        if (!$eventid) {
+            return $this->bookingError('Invalid event selected.', '/events', 422);
         }
 
-        /* Check event exists */
-        $event = $this->events->findById((int)$eventId);
+        $event = $this->events->findById($eventid);
 
         if (!$event) {
-            return [
-                'title' => 'Error',
-                'template' => 'event.html.php',
-                'variables' => [
-                    'error' => 'Event not found'
-                ]
-            ];
+            return $this->bookingError('Event not found.', '/events', 404);
         }
 
-        /* Prevent booking past events */
         if (strtotime($event->event_date) < time()) {
-            return [
-                'redirect' => '/event/show/' . $eventId
-            ];
+            return $this->bookingError('This event has already ended.', '/events/show/' . $eventid, 422);
         }
 
-        /* Prevent duplicate bookings */
-        if ($this->bookings->exists($userId, (int)$eventId)) {
-            return [
-                'redirect' => '/event/show/' . $eventId
-            ];
+        /* Use your existing duplicate-booking check here */
+        if ($this->bookings->exists($userid, $eventid)) {
+            return $this->bookingError('You have already booked this event.', '/events/show/' . $eventid, 409);
         }
 
-        /* Create booking */
+        /* Save booking using your existing booking model method */
         $this->bookings->save([
-            'userid' => $userId,
-            'eventid' => $eventId,
+            'userid' => $userid,
+            'eventid' => $eventid
         ]);
 
-        /* Redirect after booking */
-        return [
-            'redirect' => '/event/show/' . $eventId
-        ];
+        if ($this->isAjaxRequest()) {
+            $this->jsonResponse([
+                'success' => true,
+                'message' => 'Event booked successfully.',
+                'alreadyBookedText' => 'You have already booked this event.'
+            ]);
+        }
+
+        return ['redirect' => '/booking'];
+    }
+
+    private function bookingError(string $message, string $redirect, int $statusCode = 422): array
+    {
+        if ($this->isAjaxRequest()) {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => $message
+            ], $statusCode);
+        }
+
+        return ['redirect' => $redirect];
     }
 
     /* Cancel an existing booking */
@@ -111,6 +133,11 @@ class BookingController
     {
         /* Must be logged in */
         if (!isset($_SESSION['user'])) {
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+            $_SESSION['flash_message'] = 'You need to log in to cancel your bookings.';
+            $_SESSION['flash_type'] = 'info';
             return ['redirect' => '/account'];
         }
 
@@ -118,6 +145,12 @@ class BookingController
 
         /* Validate booking ID */
         if (!$bookingId) {
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+            $_SESSION['flash_message'] = 'Invalid booking selected';
+            $_SESSION['flash_type'] = 'info';
+
             return ['redirect' => '/booking'];
         }
 

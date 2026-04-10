@@ -118,6 +118,15 @@
     <!-- Main content area:
         the controller will inject page-specific content here -->
     <main class="main">
+      <!-- Flash message:
+           If there's a flash message in the session, display it and then clear it -->
+        <?php if (!empty($_SESSION['flash_message'])): ?>
+          <div class="flash-message flash-message--<?= htmlspecialchars($_SESSION['flash_type'] ?? 'info') ?>">
+              <?= htmlspecialchars($_SESSION['flash_message']) ?>
+          </div>
+          <?php unset($_SESSION['flash_message'], $_SESSION['flash_type']); ?>
+        <?php endif; ?>
+        <!-- The $content variable is set by the controller and contains the HTML for the specific page being rendered -->
         <?= $content ?>
     </main>
 

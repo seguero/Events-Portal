@@ -53,8 +53,8 @@ class Application
         $controller = $this->router->getController($controllerName);
 
         if (!method_exists($controller, $action)) {
-            http_response_code(404);
-            exit('404 - Action not found');
+            $controller = $this->router->getController('error');
+            $action = 'notFound';
         }
 
         $page = $controller->$action(...$params);

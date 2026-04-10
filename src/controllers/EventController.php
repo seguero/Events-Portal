@@ -46,6 +46,7 @@ class EventController
             'title' => 'Events',
             'template' => 'events.html.php',
             'styles' => ['events.css', 'cards.css'],
+            'scripts' => ['events.js'],
             'variables' => [
                 'events' => $eventList,
                 'eventTypes' => $eventTypes,
@@ -87,10 +88,33 @@ class EventController
             'title' => $event->title,
             'template' => 'event.html.php',
             'styles' => ['event.css'],
+            'scripts' => ['booking.js'],
             'variables' => [
                 'event' => $event,
                 'alreadyBooked' => $alreadyBooked
             ]
         ];
+    }
+
+     /* AJAX search/filter: Return filtered events as JSON for the public events page. */
+    public function search(): void
+    {
+        $filters = [
+            'q' => trim($_GET['q'] ?? ''),
+            'event_type' => $_GET['event_type'] ?? [],
+            'category' => $_GET['category'] ?? [],
+            'location' => $_GET['location'] ?? [],
+            'date' => $_GET['date'] ?? '',
+            'sort' => $_GET['sort'] ?? 'date'
+        ];
+
+        $events = $this->events->filterEvents($filters);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'events' => $events
+        ]);
+        exit;
     }
 }
