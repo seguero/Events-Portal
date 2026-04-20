@@ -3,6 +3,7 @@ namespace controllers;
 
 use models\EventTable;
 use models\BookingTable;
+use framework\EmailService;
 
 /*
  * BookingController
@@ -73,46 +74,140 @@ class BookingController
     /* Create a new booking for an event */
     public function store(): array
     {
+        /*
+        * Ensure user is logged in before allowing booking
+        */
         if (empty($_SESSION['user'])) {
-            return $this->bookingError('Please log in to book this event.', '/account', 401);
+            return $this->bookingError(
+                'Please log in to book this event.',
+                '/account',
+                401
+            );
         }
 
+        // Get event ID from POST request
         $eventid = (int) ($_POST['eventid'] ?? 0);
+
+        // Get user ID from session
         $userid = (int) $_SESSION['user']['userid'];
 
+        /*
+        * Validate event ID
+        */
         if (!$eventid) {
-            return $this->bookingError('Invalid event selected.', '/events', 422);
+            return $this->bookingError(
+                'Invalid event selected.',
+                '/events',
+                422
+            );
         }
 
+        /*
+        * Retrieve event from database
+        */
         $event = $this->events->findById($eventid);
 
         if (!$event) {
-            return $this->bookingError('Event not found.', '/events', 404);
+            return $this->bookingError(
+                'Event not found.',
+                '/events',
+                404
+            );
         }
 
+        /*
+        * Prevent booking past events
+        */
         if (strtotime($event->event_date) < time()) {
-            return $this->bookingError('This event has already ended.', '/events/show/' . $eventid, 422);
+            return $this->bookingError(
+                'This event has already ended.',
+                '/events/show/' . $eventid,
+                422
+            );
         }
 
-        /* Use your existing duplicate-booking check here */
+        /*
+        * Prevent duplicate bookings
+        */
         if ($this->bookings->exists($userid, $eventid)) {
-            return $this->bookingError('You have already booked this event.', '/events/show/' . $eventid, 409);
+            return $this->bookingError(
+                'You have already booked this event.',
+                '/events/show/' . $eventid,
+                409
+            );
         }
 
-        /* Save booking using your existing booking model method */
-        $this->bookings->save([
+        /*
+        * Save booking to database
+        */
+        $bookingId = $this->bookings->save([
             'userid' => $userid,
-            'eventid' => $eventid
+            'eventid' => $eventid,
+            'confirmation_sent' => 0,
+            'reminder_sent' => 0
         ]);
 
+        /*
+        * Prepare user details for email
+        */
+        $user = $_SESSION['user'];
+
+        $fullName = trim(
+            ($user['firstname'] ?? '') . ' ' .
+            ($user['lastname'] ?? '')
+        );
+
+        /*
+        * Send confirmation email
+        */
+        $emailSent = false;
+
+        if (!empty($user['email'])) {
+            $mailer = new \framework\EmailService();
+
+            $emailSent = $mailer->sendBookingConfirmation(
+                $user['email'],
+                $fullName !== '' ? $fullName : 'User',
+                $event
+            );
+        }
+
+        if ($emailSent) {
+            $this->bookings->markConfirmationSent((int)$bookingId);
+        }
+
+        /*
+        * Handle AJAX response
+        */
         if ($this->isAjaxRequest()) {
+
+            $message = $emailSent
+                ? 'Event booked successfully. A confirmation email has been sent.'
+                : 'Event booked successfully, but email could not be sent.';
+
             $this->jsonResponse([
                 'success' => true,
-                'message' => 'Event booked successfully.',
-                'alreadyBookedText' => 'You have already booked this event.'
+                'message' => $message,
+                'emailSent' => $emailSent
             ]);
         }
 
+        /*
+        * Store flash message for non-AJAX requests
+        */
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        $_SESSION['flash_message'] = $emailSent
+            ? 'Event booked successfully. Confirmation email sent.'
+            : 'Event booked successfully (email failed).';
+
+        $_SESSION['flash_type'] = $emailSent ? 'success' : 'warning';
+
+        /*
+        * Redirect to bookings page
+        */
         return ['redirect' => '/booking'];
     }
 

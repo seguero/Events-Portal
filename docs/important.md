@@ -15,6 +15,7 @@ web - localhost:8080
 phpmyadmin - localhost:8081
 
 Docker
+The PHP container automatically installs Composer dependencies, including PHPMailer, on startup if the vendor folder is missing.
 -run server with docker compose up -d --build
 -reset database data with docker compose down -v
 -give it a minute for database to initialize otherwise encountering 'Connection Refused' error

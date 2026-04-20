@@ -7,10 +7,13 @@ services:
       - ./src:/var/www/html
     depends_on:
       - db
+    environment:
+      TZ: Europe/London
 
   db:
     image: mysql:8.0
     environment:
+      TZ: Europe/London
       MYSQL_ROOT_PASSWORD: rootpass
       MYSQL_DATABASE: csym019_db
       MYSQL_USER: csym019_user

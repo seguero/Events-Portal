@@ -21,4 +21,16 @@ class BookingModel
 
     /* Booking date and time */
     public ?string $booked_at = null;
+
+    /* Email confirmation status */
+    public int $confirmation_sent = 0;
+
+    /* Email confirmation sent timestamp */
+    public ?string $confirmation_sent_at = null;
+
+    /* Reminder email status */
+    public int $reminder_sent = 0;
+
+    /* Reminder sent timestamp */
+    public ?string $reminder_sent_at = null;
 }

@@ -66,7 +66,15 @@ class BookingTable
     /* Get bookings for a specific user */
     public function findByUser(int $userid): array
     {
-        return $this->table->findWhere(['userid' => $userid]);
+        $stmt = $this->pdo->prepare(
+            'SELECT * FROM bookings WHERE userid = :userid ORDER BY booked_at DESC'
+        );
+
+        $stmt->execute([
+            'userid' => $userid
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_CLASS, BookingModel::class);
     }
 
     /* Get upcoming bookings for a specific user */
@@ -105,5 +113,74 @@ class BookingTable
         ]);
 
         return $stmt->fetchAll(\PDO::FETCH_OBJ);
+    }
+
+    /* Get bookings for events starting in the next 24 hours without reminder sent */
+    public function findBookingsNeedingReminder(): array
+    {
+        $now = date('Y-m-d H:i:s');
+        $next24 = date('Y-m-d H:i:s', strtotime('+24 hours'));
+
+        $stmt = $this->pdo->prepare(
+            'SELECT 
+                b.bookingid,
+                b.userid,
+                b.eventid,
+                b.booked_at,
+                b.reminder_sent,
+                u.firstname,
+                u.lastname,
+                u.email,
+                e.title,
+                e.event_type,
+                e.category,
+                e.event_date,
+                e.location,
+                e.description
+            FROM bookings b
+            JOIN users u ON b.userid = u.userid
+            JOIN events e ON b.eventid = e.eventid
+            WHERE e.event_date > :now
+            AND e.event_date <= :next24
+            AND b.reminder_sent = 0
+            ORDER BY e.event_date ASC'
+        );
+
+        $stmt->execute([
+            'now' => $now,
+            'next24' => $next24
+        ]);
+
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
+    }
+
+    /* Mark a booking confirmation email as sent */
+    public function markConfirmationSent(int $bookingid): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE bookings
+            SET confirmation_sent = 1,
+                confirmation_sent_at = NOW()
+            WHERE bookingid = :bookingid'
+        );
+
+        $stmt->execute([
+            'bookingid' => $bookingid
+        ]);
+    }
+
+    /* Mark a booking reminder as sent */
+    public function markReminderSent(int $bookingid): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE bookings
+            SET reminder_sent = 1,
+                reminder_sent_at = NOW()
+            WHERE bookingid = :bookingid'
+        );
+
+        $stmt->execute([
+            'bookingid' => $bookingid
+        ]);
     }
 }

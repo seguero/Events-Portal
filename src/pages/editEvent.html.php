@@ -65,11 +65,11 @@
         <div class="form-group">
             <label for="event_date">Event Date</label>
             <input
-                type="date"
+                type="datetime-local"
                 id="event_date"
                 name="event_date"
                 required
-                value="<?= date('Y-m-d', strtotime($event->event_date)) ?>">
+                value="<?= isset($event->event_date) ? date('Y-m-d\TH:i', strtotime($event->event_date)) : '' ?>">
         </div>
 
         <!-- Event location input -->

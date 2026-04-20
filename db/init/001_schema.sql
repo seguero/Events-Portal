@@ -27,8 +27,11 @@ CREATE TABLE bookings (
     bookingid INT AUTO_INCREMENT PRIMARY KEY,
     userid INT NOT NULL,
     eventid INT NOT NULL,
-
     booked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    confirmation_sent TINYINT(1) NOT NULL DEFAULT 0,
+    confirmation_sent_at DATETIME NULL,
+    reminder_sent TINYINT(1) NOT NULL DEFAULT 0,
+    reminder_sent_at DATETIME NULL,
 
     FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
     FOREIGN KEY (eventid) REFERENCES events(eventid) ON DELETE CASCADE,

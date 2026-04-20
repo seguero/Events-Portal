@@ -23,17 +23,17 @@
 
         <div class="form-group">
             <label for="event_type">Event Type</label>
-            <input type="text" id="event_type" name="event_type">
+            <input type="text" id="event_type" name="event_type" required>
         </div>
 
         <div class="form-group">
             <label for="category">Category</label>
-            <input type="text" id="category" name="category">
+            <input type="text" id="category" name="category" required>
         </div>
 
         <div class="form-group">
             <label for="event_date">Event Date</label>
-            <input type="date" id="event_date" name="event_date" required>
+            <input type="datetime-local" id="event_date" name="event_date" required>
         </div>
 
         <div class="form-group">
@@ -43,7 +43,7 @@
 
         <div class="form-group">
             <label for="description">Description</label>
-            <textarea id="description" name="description" rows="5"></textarea>
+            <textarea id="description" name="description" rows="5" required></textarea>
         </div>
 
         <div class="form-actions">

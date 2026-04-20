@@ -19,3 +19,8 @@ Clean URLs were implemented using Apache’s mod_rewrite module via a .htaccess 
 https://httpd.apache.org/docs/2.4/howto/htaccess.html
 https://httpd.apache.org/docs/2.4/mod/mod_rewrite.html
 -->
+<!--
+CRONTAB
+A cron job was implemented to automate reminder emails by executing a PHP script at scheduled intervals.
+https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html
+-->
