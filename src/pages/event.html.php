@@ -5,11 +5,20 @@
 <!-- Event details section -->
 <section class="single-event">
     <h1 class="event-title"><?= htmlspecialchars($event->title) ?></h1>
-    <p><strong>Type:</strong> <?= htmlspecialchars($event->event_type) ?></p>
-    <p><strong>Category:</strong> <?= htmlspecialchars($event->category) ?></p>
-    <p><strong>Date:</strong> <?= date('d M Y, H:i', strtotime($event->event_date)) ?></p>
-    <p><strong>Location:</strong> <?= htmlspecialchars($event->location) ?></p>
-    <p><?= nl2br(htmlspecialchars($event->description)) ?></p>
+
+    <img
+        class="single-event-image"
+        src="<?= !empty($event->image_path) ? htmlspecialchars($event->image_path) : '/assets/placeholder.jpg' ?>"
+        alt="<?= htmlspecialchars($event->title) ?>"
+    >
+
+    <div class="single-event-details">
+        <p><strong>Type:</strong> <?= htmlspecialchars($event->event_type) ?></p>
+        <p><strong>Category:</strong> <?= htmlspecialchars($event->category) ?></p>
+        <p><strong>Date:</strong> <?= date('d M Y, H:i', strtotime($event->event_date)) ?></p>
+        <p><strong>Location:</strong> <?= htmlspecialchars($event->location) ?></p>
+        <p><?= nl2br(htmlspecialchars($event->description)) ?></p>
+    </div>
 
     <!-- Booking form, shown if user is logged in and event is upcoming
          Prevent duplicate bookings -->

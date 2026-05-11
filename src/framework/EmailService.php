@@ -14,6 +14,7 @@ use PHPMailer\PHPMailer\Exception;
 class EmailService
 {
     private PHPMailer $mail;
+    private array $config;
 
     /*
      * Constructor
@@ -21,21 +22,49 @@ class EmailService
      */
     public function __construct()
     {
-        $config = require __DIR__ . '/../config/mail.php';
+        $this->config = require __DIR__ . '/../config/mail.php';
 
         $this->mail = new PHPMailer(true);
         $this->mail->isSMTP();
         $this->mail->Host = 'smtp.gmail.com';
         $this->mail->SMTPAuth = true;
-        $this->mail->Username = $config['smtp_email'] ?? '';
-        $this->mail->Password = $config['smtp_password'] ?? '';
+        $this->mail->Username = $this->config['smtp_email'] ?? '';
+        $this->mail->Password = $this->config['smtp_password'] ?? '';
         $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $this->mail->Port = 587;
 
-        $fromEmail = $config['smtp_from_email'] ?? $this->mail->Username;
-        $fromName = $config['smtp_from_name'] ?? 'Event Portal';
+        $fromEmail = $this->config['smtp_from_email'] ?? $this->mail->Username;
+        $fromName = $this->config['smtp_from_name'] ?? 'Event Portal';
 
         $this->mail->setFrom($fromEmail, $fromName);
+    }
+
+    /*
+     * Shared email sender used by all email types.
+     */
+    private function sendEmail(
+        string $toEmail,
+        string $toName,
+        string $subject,
+        string $htmlBody,
+        string $altBody,
+        string $logPrefix
+    ): bool {
+        try {
+            $this->mail->clearAddresses();
+            $this->mail->clearAttachments();
+
+            $this->mail->addAddress($toEmail, $toName);
+            $this->mail->isHTML(true);
+            $this->mail->Subject = $subject;
+            $this->mail->Body = $htmlBody;
+            $this->mail->AltBody = $altBody;
+
+            return $this->mail->send();
+        } catch (Exception $e) {
+            error_log($logPrefix . $this->mail->ErrorInfo);
+            return false;
+        }
     }
 
     /*
@@ -101,31 +130,90 @@ class EmailService
     }
 
     /*
-     * Shared email sender used by all email types.
+     * Send contact form message to the site administrator.
      */
-    private function sendEmail(
-        string $toEmail,
-        string $toName,
+    public function sendContactMessage(
+        string $name,
+        string $email,
         string $subject,
-        string $htmlBody,
-        string $altBody,
-        string $logPrefix
+        string $message
     ): bool {
-        try {
-            $this->mail->clearAddresses();
-            $this->mail->clearAttachments();
+        $toEmail = $this->config['contact_recipient'] ?? $this->mail->Username;
+        $toName = 'CSYM019 Event Portal';
 
-            $this->mail->addAddress($toEmail, $toName);
-            $this->mail->isHTML(true);
-            $this->mail->Subject = $subject;
-            $this->mail->Body = $htmlBody;
-            $this->mail->AltBody = $altBody;
+        $emailSubject = 'Contact Form: ' . $subject;
 
-            return $this->mail->send();
-        } catch (Exception $e) {
-            error_log($logPrefix . $this->mail->ErrorInfo);
-            return false;
-        }
+        $content = '
+            <p style="margin:0 0 16px;">A new contact form message has been submitted through the Event Portal.</p>
+
+            <div style="background-color:#f8f9fa; border:1px solid #e9ecef; border-radius:10px; padding:20px;">
+                ' . $this->buildDetailRow('Name', $name) . '
+                ' . $this->buildDetailRow('Email', $email) . '
+                ' . $this->buildDetailRow('Subject', $subject) . '
+                ' . $this->buildDetailRow('Message', nl2br($this->escape($message)), false) . '
+            </div>
+
+            <p style="margin:24px 0 0;">You can reply directly to the sender using the email address above.</p>
+        ';
+
+        $body = $this->buildEmailLayout(
+            'New Contact Message',
+            $content,
+            '#4f6dff'
+        );
+
+        $altBody =
+            "New Contact Message\n\n" .
+            "Name: {$name}\n" .
+            "Email: {$email}\n" .
+            "Subject: {$subject}\n\n" .
+            "Message:\n{$message}";
+
+        return $this->sendEmail(
+            $toEmail,
+            $toName,
+            $emailSubject,
+            $body,
+            $altBody,
+            'Contact email failed: '
+        );
+    }
+
+    /*
+    * Send new event notification email to a subscriber.
+    */
+    public function sendNewEventNotification(string $toEmail, object $event): bool
+    {
+        $subject = 'New Event Added - ' . ($event->title ?? 'Event');
+
+        $intro = '<p style="margin:0 0 16px;">Hello,</p>
+                <p style="margin:0 0 20px;">A new event has been added to the Event Portal.</p>';
+
+        $body = $this->buildEmailLayout(
+            'New Event Added',
+            $intro . $this->buildEventDetails($event) .
+            '<p style="margin:24px 0 0;">Visit the Event Portal to view more details and book your place.</p>',
+            '#4f6dff'
+        );
+
+        $altBody =
+            "New Event Added\n\n" .
+            "A new event has been added to the Event Portal.\n" .
+            "Title: " . ($event->title ?? '') . "\n" .
+            "Type: " . ($event->event_type ?? '') . "\n" .
+            "Category: " . ($event->category ?? '') . "\n" .
+            "Date: " . $this->formatDate($event->event_date ?? '') . "\n" .
+            "Location: " . ($event->location ?? '') . "\n\n" .
+            "Visit the Event Portal to view more details.";
+
+        return $this->sendEmail(
+            $toEmail,
+            'Subscriber',
+            $subject,
+            $body,
+            $altBody,
+            'New event notification failed: '
+        );
     }
 
     /*

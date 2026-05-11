@@ -11,6 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("event-search-input");
   const filterForm = document.getElementById("events-filter-form");
   const eventsList = document.querySelector(".events-list");
+  const startDateInput = document.getElementById("start-date-filter");
+  const endDateInput = document.getElementById("end-date-filter");
+  const clearDateButton = document.getElementById("clear-date-filter");
 
   /* Stop if this script is loaded on a page without the events UI */
   if (!searchInput || !filterForm || !eventsList) {
@@ -47,6 +50,48 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* Work out whether an event is upcoming, starting soon, or closed */
+  function getEventStatus(dateString) {
+    if (!dateString) {
+      return {
+        className: "event-status-closed",
+        label: "Closed",
+      };
+    }
+
+    const eventDate = new Date(dateString.replace(" ", "T"));
+    const now = new Date();
+
+    if (Number.isNaN(eventDate.getTime())) {
+      return {
+        className: "event-status-closed",
+        label: "Closed",
+      };
+    }
+
+    const millisecondsUntilEvent = eventDate.getTime() - now.getTime();
+    const hoursUntilEvent = millisecondsUntilEvent / (1000 * 60 * 60);
+
+    if (millisecondsUntilEvent < 0) {
+      return {
+        className: "event-status-closed",
+        label: "Closed",
+      };
+    }
+
+    if (hoursUntilEvent <= 24) {
+      return {
+        className: "event-status-soon",
+        label: "Starting soon",
+      };
+    }
+
+    return {
+      className: "event-status-upcoming",
+      label: "Upcoming",
+    };
+  }
+
   /* Render event cards */
   function renderEvents(events) {
     if (!events || events.length === 0) {
@@ -57,25 +102,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     eventsList.innerHTML = events
-      .map(
-        (event) => `
-      <article class="card card-event">
-        <img
-          class="card-media"
-          src="../assets/placeholder.jpg"
-          alt="Event"
-        />
+      .map((event) => {
+        const status = getEventStatus(event.event_date);
 
-        <div class="card-body">
-          <span class="badge">${escapeHtml(event.event_type)}</span>
-          <h3 class="card-title">${escapeHtml(event.title)}</h3>
-          <p class="card-meta">${escapeHtml(formatEventDate(event.event_date))}</p>
-          <p class="card-text">${escapeHtml(event.location)}</p>
-          <a class="card-cta" href="/events/show/${event.eventid}">Read more</a>
-        </div>
-      </article>
-    `,
-      )
+        return `
+          <article class="card card-event ${status.className}">
+            <img
+              class="card-media"
+              src="${event.image_path ? escapeHtml(event.image_path) : "../assets/placeholder.jpg"}"
+              alt="${escapeHtml(event.title)}"
+            />
+
+            <div class="card-body">
+              <div class="card-badges">
+                <span class="badge">${escapeHtml(event.event_type)}</span>
+                <span class="badge badge-status">${escapeHtml(status.label)}</span>
+              </div>
+
+              <h3 class="card-title">${escapeHtml(event.title)}</h3>
+              <p class="card-meta">${escapeHtml(formatEventDate(event.event_date))}</p>
+              <p class="card-text">${escapeHtml(event.location)}</p>
+              <p class="card-description">${escapeHtml(event.description)}</p>
+              <a class="card-cta" href="/events/show/${event.eventid}">Read more</a>
+            </div>
+          </article>
+        `;
+      })
       .join("");
   }
 
@@ -140,4 +192,34 @@ document.addEventListener("DOMContentLoaded", () => {
   filterForm.addEventListener("change", () => {
     updateEvents();
   });
+
+  /* Clear both date inputs and reload all matching events */
+  if (clearDateButton && startDateInput && endDateInput) {
+    clearDateButton.addEventListener("click", () => {
+      startDateInput.value = "";
+      endDateInput.value = "";
+
+      endDateInput.removeAttribute("min");
+      startDateInput.removeAttribute("max");
+
+      updateEvents();
+    });
+  }
+
+  /* Prevent invalid date ranges */
+  if (startDateInput && endDateInput) {
+    startDateInput.addEventListener("change", () => {
+      endDateInput.min = startDateInput.value;
+
+      if (endDateInput.value && endDateInput.value < startDateInput.value) {
+        endDateInput.value = startDateInput.value;
+      }
+    });
+
+    endDateInput.addEventListener("change", () => {
+      startDateInput.max = endDateInput.value;
+    });
+  }
+
+  updateEvents();
 });

@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS events (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE bookings (
+CREATE TABLE IF NOT EXISTS bookings (
     bookingid INT AUTO_INCREMENT PRIMARY KEY,
     userid INT NOT NULL,
     eventid INT NOT NULL,
@@ -37,4 +37,21 @@ CREATE TABLE bookings (
     FOREIGN KEY (eventid) REFERENCES events(eventid) ON DELETE CASCADE,
 
     UNIQUE KEY unique_booking (userid, eventid)
+);
+
+CREATE TABLE blog_posts (
+    postid INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    content TEXT NOT NULL,
+    image_path VARCHAR(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS subscribers (
+    subscriberid INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

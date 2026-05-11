@@ -104,9 +104,47 @@ class EventController
             'event_type' => $_GET['event_type'] ?? [],
             'category' => $_GET['category'] ?? [],
             'location' => $_GET['location'] ?? [],
-            'date' => $_GET['date'] ?? '',
+            'start_date' => trim($_GET['start_date'] ?? ''),
+            'end_date' => trim($_GET['end_date'] ?? ''),
             'sort' => $_GET['sort'] ?? 'date'
         ];
+
+        if (
+            $filters['start_date'] !== '' &&
+            !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filters['start_date'])
+        ) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid start date.'
+            ]);
+            exit;
+        }
+
+        if (
+            $filters['end_date'] !== '' &&
+            !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filters['end_date'])
+        ) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid end date.'
+            ]);
+            exit;
+        }
+
+        if (
+            $filters['start_date'] !== '' &&
+            $filters['end_date'] !== '' &&
+            $filters['start_date'] > $filters['end_date']
+        ) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => false,
+                'message' => 'Start date cannot be after end date.'
+            ]);
+            exit;
+        }
 
         $events = $this->events->filterEvents($filters);
 

@@ -116,6 +116,9 @@ footer {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin-top: 1rem;
+  padding: 1.5rem 1rem;
+  gap: 1rem;
 }
 
 /* Social icons row */
@@ -127,13 +130,133 @@ footer {
   flex-direction: row;
 }
 
+/* Newsletter form container */
+.newsletter-form {
+  background-color: #151521;
+  color: white;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  width: min(100%, 520px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
 /* Newsletter text alignment */
 .newsletter-text {
   display: flex;
   justify-content: center;
   align-items: center;
+  color: white;
+  font-weight: 600;
+}
+
+/* Newsletter form row */
+.newsletter-form form {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* Newsletter email input */
+.newsletter-form input[type="email"] {
+  flex: 1;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0.5rem;
+  background: white;
+  color: #151521;
+  font: inherit;
+}
+
+/* Newsletter submit button */
+.subscribe-submit {
+  border: none;
+  border-radius: 0.5rem;
+  background: #8aa2ff;
+  color: white;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Newsletter submit button hover */
+.subscribe-submit:hover {
+  background: #6f87e8;
 }
 
 .newsletter-email-label {
-  visibility: hidden;
+  position: absolute;
+  left: -9999px;
+}
+
+/* Copyright text */
+.copyright {
+  color: #111;
+}
+
+/* Newsletter feedback message */
+.newsletter-message {
+  width: 100%;
+  margin: 0;
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Newsletter success message */
+.newsletter-message.success {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+/* Newsletter error message */
+.newsletter-message.error {
+  background: #ffebee;
+  color: #b71c1c;
+}
+
+/* Newsletter info message */
+.newsletter-message.info {
+  background: #e3f2fd;
+  color: #0d47a1;
+}
+
+@media (max-width: 800px) {
+  nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .account,
+  .account--logged-in {
+    margin-left: 0;
+  }
+
+  .nav-item {
+    padding: 0.75rem;
+  }
+
+  .nav-text {
+    font-size: 0.9rem;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 800px) {
+  .newsletter-form {
+    width: calc(100% - 2rem);
+  }
+
+  .newsletter-form form {
+    flex-direction: column;
+  }
+
+  .subscribe-submit {
+    width: 100%;
+  }
 }

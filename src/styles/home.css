@@ -1,0 +1,11 @@
+@media (max-width: 800px) {
+  .cards,
+  .blog-grid,
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card--row {
+    grid-template-columns: 1fr;
+  }
+}

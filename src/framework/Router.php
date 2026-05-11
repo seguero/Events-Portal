@@ -23,8 +23,12 @@ class Router
     {
         $map = [
             'home' => \controllers\HomeController::class,
+            'about' => \controllers\AboutController::class,
+            'blog' => \controllers\BlogController::class,
+            'contact' => \controllers\ContactController::class,
             'debug' => \controllers\DebugController::class,
             'account' => \controllers\AccountController::class,
+            'subscriber' => \controllers\SubscriberController::class,
             'events' => \controllers\EventController::class,
             'booking' => \controllers\BookingController::class,
             'admin' => \controllers\AdminController::class,

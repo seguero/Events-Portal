@@ -50,25 +50,24 @@
                 </div>
             </details>
 
-            <!-- Static date filter options -->
+            <!-- Dynamic date range filter -->
             <details class="filter-group" open>
-                <summary class="filter-summary">Date</summary>
+                <summary class="filter-summary">Date range</summary>
 
-                <div class="filter-options">
+                <div class="filter-options date-range-options">
                     <label class="filter-option">
-                        <input type="radio" name="date" value="today">
-                        Today
+                        From
+                        <input type="date" name="start_date" id="start-date-filter">
                     </label>
 
                     <label class="filter-option">
-                        <input type="radio" name="date" value="week">
-                        This week
+                        To
+                        <input type="date" name="end_date" id="end-date-filter">
                     </label>
 
-                    <label class="filter-option">
-                        <input type="radio" name="date" value="month">
-                        This month
-                    </label>
+                    <button type="button" id="clear-date-filter" class="filter-clear-btn">
+                        Clear dates
+                    </button>
                 </div>
             </details>
 
@@ -99,28 +98,53 @@
         <!-- Event card list rendered dynamically from database records -->
         <div class="events-list">
             <?php foreach ($events as $event): ?>
-                <article class="card card-event">
+                <?php
+                    $eventTime = strtotime($event->event_date);
+                    $now = time();
+                    $hoursUntilEvent = ($eventTime - $now) / 3600;
+
+                    if ($eventTime < $now) {
+                        $statusClass = 'event-status-closed';
+                        $statusLabel = 'Closed';
+                    } elseif ($hoursUntilEvent <= 24) {
+                        $statusClass = 'event-status-soon';
+                        $statusLabel = 'Starting soon';
+                    } else {
+                        $statusClass = 'event-status-upcoming';
+                        $statusLabel = 'Upcoming';
+                    }
+                ?>
+
+                <article class="card card-event <?= $statusClass ?>">
                     <img
                         class="card-media"
-                        src="../assets/placeholder.jpg"
-                        alt="Event"
+                        src="<?= !empty($event->image_path) ? htmlspecialchars($event->image_path) : '../assets/placeholder.jpg' ?>"
+                        alt="<?= htmlspecialchars($event->title) ?>"
                     />
 
                     <div class="card-body">
-                        <!-- Event type badge -->
-                        <span class="badge"><?= htmlspecialchars($event->event_type) ?></span>
+                        <div class="card-badges">
+                            <span class="badge"><?= htmlspecialchars($event->event_type) ?></span>
+                            <span class="badge badge-status"><?= htmlspecialchars($statusLabel) ?></span>
+                        </div>
 
-                        <!-- Event title -->
                         <h3 class="card-title"><?= htmlspecialchars($event->title) ?></h3>
 
-                        <!-- Formatted event date and time -->
-                        <p class="card-meta"><?= date('d M Y, H:i', strtotime($event->event_date)) ?></p>
+                        <p class="card-meta">
+                            <?= date('d M Y, H:i', strtotime($event->event_date)) ?>
+                        </p>
 
-                        <!-- Event location -->
-                        <p class="card-text"><?= htmlspecialchars($event->location) ?></p>
+                        <p class="card-text">
+                            <?= htmlspecialchars($event->location) ?>
+                        </p>
 
-                        <!-- Placeholder link for future single event page -->
-                        <a class="card-cta" href="/events/show/<?= htmlspecialchars($event->eventid) ?>">Read more</a>
+                        <p class="card-description">
+                            <?= htmlspecialchars($event->description) ?>
+                        </p>
+
+                        <a class="card-cta" href="/events/show/<?= htmlspecialchars($event->eventid) ?>">
+                            Read more
+                        </a>
                     </div>
                 </article>
             <?php endforeach; ?>

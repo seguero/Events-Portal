@@ -1,0 +1,147 @@
+/* Contact page header */
+.page-header {
+  max-width: 850px;
+  margin: 0 auto 2rem;
+  text-align: center;
+  color: #111;
+}
+
+/* Contact page layout */
+.contact-layout {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.5rem;
+}
+
+/* Contact card styling */
+.contact-card {
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  background: #fff;
+  color: #111;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* Contact card headings */
+.contact-card h2 {
+  margin: 0 0 1rem;
+  color: #111;
+}
+
+/* Contact form layout */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Contact form groups */
+.contact-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* Contact form labels */
+.contact-form label {
+  font-weight: 600;
+  color: #222;
+}
+
+/* Contact form inputs */
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font: inherit;
+}
+
+/* Contact form textarea */
+.contact-form textarea {
+  resize: vertical;
+}
+
+/* Contact form actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Send message button */
+.btn-send {
+  border: none;
+  border-radius: 8px;
+  background: #2e7d32;
+  color: #fff;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Send message button hover */
+.btn-send:hover {
+  background: #256628;
+}
+
+/* Contact message feedback */
+.contact-message {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+/* Success contact message */
+.contact-message.success {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border: 1px solid #a5d6a7;
+}
+
+/* Error contact message */
+.contact-message.error {
+  background: #ffebee;
+  color: #b71c1c;
+  border: 1px solid #ef9a9a;
+}
+
+/* Info contact message */
+.contact-message.info {
+  background: #e3f2fd;
+  color: #0d47a1;
+  border: 1px solid #90caf9;
+}
+
+/* Contact information panel */
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Contact information text */
+.contact-info p {
+  margin: 0;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* Contact information row */
+.contact-info-item {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* Contact information icon */
+.contact-info-item i {
+  color: #4f6dff;
+  margin-top: 0.2rem;
+}

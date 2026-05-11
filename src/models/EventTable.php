@@ -110,22 +110,15 @@ class EventTable
             $sql .= " AND location IN (" . implode(', ', $placeholders) . ")";
         }
 
-        /* Date radio filter */
-        if (!empty($filters['date'])) {
-            switch ($filters['date']) {
-                case 'today':
-                    $sql .= " AND DATE(event_date) = CURDATE()";
-                    break;
+        /* Dynamic date range filter */
+        if (!empty($filters['start_date'])) {
+            $sql .= " AND event_date >= :start_date";
+            $params['start_date'] = $filters['start_date'] . ' 00:00:00';
+        }
 
-                case 'week':
-                    $sql .= " AND YEARWEEK(event_date, 1) = YEARWEEK(CURDATE(), 1)";
-                    break;
-
-                case 'month':
-                    $sql .= " AND MONTH(event_date) = MONTH(CURDATE())
-                              AND YEAR(event_date) = YEAR(CURDATE())";
-                    break;
-            }
+        if (!empty($filters['end_date'])) {
+            $sql .= " AND event_date <= :end_date";
+            $params['end_date'] = $filters['end_date'] . ' 23:59:59';
         }
 
         /* Sort control */
@@ -184,5 +177,41 @@ class EventTable
     public function delete(int $eventid): void
     {
         $this->table->delete($eventid);
+    }
+
+    /* Retrieve the most booked events for the homepage */
+    public function findPopularEvents(int $limit = 3): array
+    {
+        $pdo = Database::getConnection();
+
+        $sql = "SELECT e.*, COUNT(b.bookingid) AS booking_count
+                FROM events e
+                LEFT JOIN bookings b ON e.eventid = b.eventid
+                GROUP BY e.eventid
+                ORDER BY booking_count DESC, e.event_date ASC
+                LIMIT :limit";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_CLASS, EventModel::class);
+    }
+
+    /* Retrieve the latest created events for the homepage */
+    public function findLatestEvents(int $limit = 2): array
+    {
+        $pdo = Database::getConnection();
+
+        $sql = "SELECT *
+                FROM events
+                ORDER BY eventid DESC
+                LIMIT :limit";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_CLASS, EventModel::class);
     }
 }

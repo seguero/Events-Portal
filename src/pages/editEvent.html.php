@@ -21,7 +21,7 @@
     <?php endif; ?>
 
     <!-- Form used to update an existing event -->
-    <form id="editEventForm" class="admin-form" method="post" action="/admin/update">
+    <form id="editEventForm" class="admin-form" method="post" action="/admin/update" enctype="multipart/form-data">
 
         <!-- Inline message area used by JavaScript to display success/error feedback
              without reloading the page. -->
@@ -81,6 +81,25 @@
                 name="location"
                 required
                 value="<?= htmlspecialchars($event->location) ?>">
+        </div>
+
+        <!-- Event image upload input -->
+        <div class="form-group">
+            <label for="image">Event Image</label>
+
+            <?php if (!empty($event->image_path)): ?>
+                <div class="current-event-image">
+                    <p>Current image:</p>
+                    <img
+                        src="<?= htmlspecialchars($event->image_path) ?>"
+                        alt="<?= htmlspecialchars($event->title) ?>"
+                        style="max-width: 220px; border-radius: 8px;"
+                    >
+                </div>
+            <?php endif; ?>
+
+            <input type="file" id="image" name="image" accept="image/jpeg, image/png, image/webp">
+            <small>Accepted formats: JPG, PNG, WEBP. Leave empty to keep the current image.</small>
         </div>
 
         <!-- Event description input -->

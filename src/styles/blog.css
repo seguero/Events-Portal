@@ -1,0 +1,129 @@
+/* Blog page header */
+.blog-header {
+  max-width: 850px;
+  margin: 0 auto 2rem;
+  text-align: center;
+  color: #111;
+}
+
+/* Main blog page wrapper */
+.blog-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  color: #111;
+}
+
+/* Blog card grid */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+}
+
+/* Blog card */
+.blog-card {
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  background: #fff;
+  color: #111;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* Blog card body */
+.blog-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.4rem;
+}
+
+/* Blog category label */
+.blog-label {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  background: rgba(138, 162, 255, 0.18);
+  color: #4f6dff;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Blog heading */
+.blog-card h2 {
+  margin: 0;
+  color: #111;
+}
+
+/* Blog meta text */
+.blog-meta {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Blog card paragraph */
+.blog-card p {
+  margin: 0;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* Blog read more link */
+.blog-cta {
+  margin-top: auto;
+  color: #4f6dff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Blog empty message */
+.blog-empty {
+  grid-column: 1 / -1;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  padding: 1rem;
+  text-align: center;
+  color: #444;
+}
+
+/* Single blog post wrapper */
+.blog-single {
+  max-width: 850px;
+  margin: 0 auto;
+  color: #111;
+}
+
+/* Back link */
+.blog-back {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  color: #4f6dff;
+  text-decoration: none;
+}
+
+/* Single blog header */
+.blog-single-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Single blog title */
+.blog-single-header h1 {
+  margin: 0;
+  color: #111;
+}
+
+/* Single blog content */
+.blog-single-content {
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  background: #fff;
+  color: #333;
+  padding: 1.5rem;
+  line-height: 1.8;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}

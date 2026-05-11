@@ -2,46 +2,73 @@
 namespace controllers;
 
 use models\EventTable;
+use models\BlogTable;
+use models\SubscriberTable;
+
+use framework\EmailService;
 
 /*
  * AdminController
  *
- * Handles admin-related pages and actions for event management.
- * The controller checks admin permissions and communicates with
- * the EventTable model to create, update and delete events.
+ * Handles admin-related pages and actions for event and blog management.
+ * The controller checks admin permissions, communicates with the model layer,
+ * manages uploaded event images, and sends new-event notifications to subscribers.
  */
 class AdminController
 {
-    /* Model used to interact with the events database table */
+    /* Models and services used by the admin dashboard */
     private EventTable $events;
+    private BlogTable $blogPosts;
+    private SubscriberTable $subscribers;
+    private EmailService $emailService;
 
-    /* Initialise the EventTable model when the controller is created */
+    /* Initialise models and services when the controller is created */
     public function __construct()
     {
         $this->events = new EventTable();
+        $this->blogPosts = new BlogTable();
+        $this->subscribers = new SubscriberTable();
+        $this->emailService = new EmailService();
     }
 
-    /* Display the admin dashboard with a list of all events */
+    /* Display the admin dashboard with events and blog posts */
     public function index(): array
     {
-        /* Retrieve all events from the database */
-        $eventList = $this->events->findAll();
-
         /* Ensure the current user has admin privileges */
         if ($result = $this->requireAdmin()) {
             return $result;
         }
 
-        /* Return the admin view with event data */
+        /* Retrieve all events and blog posts from the database */
+        $eventList = $this->events->findAll();
+        $postList = $this->blogPosts->findAll();
+
+        /* Return the admin view with event and blog data */
         return [
             'title' => 'Admin',
             'template' => 'admin.html.php',
             'styles' => ['admin.css'],
-            'scripts' => ['admin.js'],
             'variables' => [
-                'events' => $eventList
+                'events' => $eventList,
+                'posts' => $postList
             ]
         ];
+    }
+
+    /* Detect whether the request came from JavaScript fetch/AJAX. */
+    private function isAjaxRequest(): bool
+    {
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+
+    /* Send JSON output and stop further rendering. */
+    private function jsonResponse(array $data, int $statusCode = 200): void
+    {
+        http_response_code($statusCode);
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
     }
 
     /* Verify that the user is logged in and has the admin role */
@@ -50,12 +77,14 @@ class AdminController
         if (empty($_SESSION['loggedIn']) || empty($_SESSION['user'])) {
             $_SESSION['flash_message'] = 'Please log in to access that page.';
             $_SESSION['flash_type'] = 'error';
+
             return ['redirect' => '/account'];
         }
 
         if ($_SESSION['user']['role'] !== 'admin') {
             $_SESSION['flash_message'] = 'You do not have permission to access the admin area.';
             $_SESSION['flash_type'] = 'error';
+
             return ['redirect' => '/home'];
         }
 
@@ -88,56 +117,93 @@ class AdminController
             return $result;
         }
 
-        /* Retrieve and trim form values from POST request */
+        /* Retrieve form values from POST request */
         $event_title = trim($_POST['title'] ?? '');
         $event_type = trim($_POST['event_type'] ?? '');
         $category = trim($_POST['category'] ?? '');
         $location = trim($_POST['location'] ?? '');
         $description = trim($_POST['description'] ?? '');
-        $raw_date = $_POST['event_date'] ?? '';
 
-        /* Basic validation */
-        if ($event_title === '' || $raw_date === '' || $location === '') {
-            return $this->storeError('Title, date and location are required.');
+        /* Convert input date into database datetime format */
+        $date = new \DateTime($_POST['event_date']);
+        $event_date = $date->format('Y-m-d H:i:s');
+
+        /* Default image used when no upload is provided */
+        $imagePath = null;
+
+        /* Handle optional image upload */
+        if (!empty($_FILES['image']['name'])) {
+            $uploadDirectory = dirname(__DIR__) . '/assets/uploads/events/';
+
+            if (!is_dir($uploadDirectory)) {
+                mkdir($uploadDirectory, 0755, true);
+            }
+
+            $allowedTypes = [
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png',
+                'image/webp' => 'webp'
+            ];
+
+            $fileType = mime_content_type($_FILES['image']['tmp_name']);
+
+            if (!array_key_exists($fileType, $allowedTypes)) {
+                return $this->storeError('Please upload a valid image file: JPG, PNG or WEBP.');
+            }
+
+            if ($_FILES['image']['size'] > 2 * 1024 * 1024) {
+                return $this->storeError('Image must be smaller than 2MB.');
+            }
+
+            $extension = $allowedTypes[$fileType];
+            $fileName = uniqid('event_', true) . '.' . $extension;
+            $targetPath = $uploadDirectory . $fileName;
+
+            if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+                return $this->storeError('Image upload failed. Please try again.');
+            }
+
+            $imagePath = '/assets/uploads/events/' . $fileName;
         }
 
-        /* Validate and convert input date into database datetime format */
-        try {
-            $date = new \DateTime($raw_date);
-            $event_date = $date->format('Y-m-d H:i:s');
-        } catch (\Exception $e) {
-            return $this->storeError('Please enter a valid event date.');
-        }
-
-        /* Save the new event using the model */
-        $newId = $this->events->save([
+        /* Save the new event and keep the generated ID */
+        $eventId = $this->events->save([
             'title' => $event_title,
             'event_type' => $event_type,
             'category' => $category,
             'event_date' => $event_date,
             'location' => $location,
-            'description' => $description
+            'description' => $description,
+            'image_path' => $imagePath
         ]);
 
-        /* Return JSON success response for fetch requests. */
+        /* Retrieve the saved event and all active subscribers */
+        $newEvent = $this->events->findById((int) $eventId);
+        $activeSubscribers = $this->subscribers->findActive();
+
+        /* Notify newsletter subscribers that a new event has been added */
+        if ($newEvent) {
+            foreach ($activeSubscribers as $subscriber) {
+                $this->emailService->sendNewEventNotification(
+                    $subscriber->email,
+                    $newEvent
+                );
+            }
+        }
+
+        /* Return JSON if the form was submitted using AJAX */
         if ($this->isAjaxRequest()) {
             $this->jsonResponse([
                 'success' => true,
-                'message' => 'Event created successfully.',
-                'redirect' => '/admin',
-                'event' => [
-                    'eventid' => $newId,
-                    'title' => $event_title,
-                    'event_type' => $event_type,
-                    'category' => $category,
-                    'event_date' => $event_date,
-                    'location' => $location,
-                    'description' => $description
-                ]
+                'message' => 'Event created successfully.'
             ]);
         }
 
-        /* Redirect back to the admin panel */
+        /* Store success feedback for normal form submissions */
+        $_SESSION['flash_message'] = 'Event created successfully.';
+        $_SESSION['flash_type'] = 'success';
+
+        /* Fallback redirect for normal form submissions */
         return ['redirect' => '/admin'];
     }
 
@@ -154,9 +220,6 @@ class AdminController
 
         /* Redirect if no ID was provided */
         if (!$id) {
-            if (session_status() !== PHP_SESSION_ACTIVE) {
-                session_start();
-            }
             $_SESSION['flash_message'] = 'Event not found.';
             $_SESSION['flash_type'] = 'info';
 
@@ -164,13 +227,10 @@ class AdminController
         }
 
         /* Retrieve the selected event from the database */
-        $event = $this->events->findById((int)$id);
+        $event = $this->events->findById((int) $id);
 
         /* Redirect if event does not exist */
         if (!$event) {
-            if (session_status() !== PHP_SESSION_ACTIVE) {
-                session_start();
-            }
             $_SESSION['flash_message'] = 'Event not found.';
             $_SESSION['flash_type'] = 'info';
 
@@ -192,97 +252,139 @@ class AdminController
     /* Handle submission of edited event data */
     public function update(): ?array
     {
-        /* Ensure only admins can update events as well. */
+        /* Ensure only admins can update events */
         if ($result = $this->requireAdmin()) {
             return $result;
         }
 
-        $eventid = $_POST['eventid'] ?? '';
-        $title = trim($_POST['title'] ?? '');
+        /* Get event ID from POST data */
+        $eventid = (int) ($_POST['eventid'] ?? 0);
+
+        /* Redirect if the event ID is missing */
+        if (!$eventid) {
+            $_SESSION['flash_message'] = 'Event not found.';
+            $_SESSION['flash_type'] = 'info';
+
+            return ['redirect' => '/admin'];
+        }
+
+        /* Retrieve the existing event before updating */
+        $existingEvent = $this->events->findById($eventid);
+
+        /* Redirect if the event does not exist */
+        if (!$existingEvent) {
+            $_SESSION['flash_message'] = 'Event not found.';
+            $_SESSION['flash_type'] = 'info';
+
+            return ['redirect' => '/admin'];
+        }
+
+        /* Retrieve updated form values from POST request */
+        $event_title = trim($_POST['title'] ?? '');
         $event_type = trim($_POST['event_type'] ?? '');
         $category = trim($_POST['category'] ?? '');
         $location = trim($_POST['location'] ?? '');
         $description = trim($_POST['description'] ?? '');
-        $raw_date = $_POST['event_date'] ?? '';
 
-        if ($eventid === '' || $title === '' || $raw_date === '' || $location === '') {
-            return $this->updateError('Title, date and location are required.', (int) $eventid);
+        /* Convert input date into database datetime format */
+        $date = new \DateTime($_POST['event_date']);
+        $event_date = $date->format('Y-m-d H:i:s');
+
+        /* Keep the existing image unless a new one is uploaded */
+        $imagePath = $existingEvent->image_path;
+
+        /* Handle optional replacement image upload */
+        if (!empty($_FILES['image']['name'])) {
+            $uploadDirectory = dirname(__DIR__) . '/assets/uploads/events/';
+
+            if (!is_dir($uploadDirectory)) {
+                mkdir($uploadDirectory, 0755, true);
+            }
+
+            $allowedTypes = [
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png',
+                'image/webp' => 'webp'
+            ];
+
+            $fileType = mime_content_type($_FILES['image']['tmp_name']);
+
+            if (!array_key_exists($fileType, $allowedTypes)) {
+                return [
+                    'title' => 'Edit Event',
+                    'template' => 'editEvent.html.php',
+                    'styles' => ['admin-form.css'],
+                    'scripts' => ['editEvent.js'],
+                    'variables' => [
+                        'event' => $existingEvent,
+                        'error' => 'Please upload a valid image file: JPG, PNG or WEBP.'
+                    ]
+                ];
+            }
+
+            if ($_FILES['image']['size'] > 2 * 1024 * 1024) {
+                return [
+                    'title' => 'Edit Event',
+                    'template' => 'editEvent.html.php',
+                    'styles' => ['admin-form.css'],
+                    'scripts' => ['editEvent.js'],
+                    'variables' => [
+                        'event' => $existingEvent,
+                        'error' => 'Image must be smaller than 2MB.'
+                    ]
+                ];
+            }
+
+            $extension = $allowedTypes[$fileType];
+            $fileName = uniqid('event_', true) . '.' . $extension;
+            $targetPath = $uploadDirectory . $fileName;
+
+            if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+                return [
+                    'title' => 'Edit Event',
+                    'template' => 'editEvent.html.php',
+                    'styles' => ['admin-form.css'],
+                    'scripts' => ['editEvent.js'],
+                    'variables' => [
+                        'event' => $existingEvent,
+                        'error' => 'Image upload failed. Please try again.'
+                    ]
+                ];
+            }
+
+            $imagePath = '/assets/uploads/events/' . $fileName;
         }
 
-        try {
-            $date = new \DateTime($raw_date);
-            $event_date = $date->format('Y-m-d H:i:s');
-        } catch (\Exception $e) {
-            return $this->updateError('Please enter a valid event date.', (int) $eventid);
-        }
-
-        /* Save updated event details using the model */
+        /* Save the updated event using the model */
         $this->events->save([
             'eventid' => $eventid,
-            'title' => $title,
+            'title' => $event_title,
             'event_type' => $event_type,
             'category' => $category,
             'event_date' => $event_date,
             'location' => $location,
-            'description' => $description
+            'description' => $description,
+            'image_path' => $imagePath
         ]);
 
-        /* Return JSON success response for fetch requests. */
+        /* Return JSON if the form was submitted using AJAX */
         if ($this->isAjaxRequest()) {
             $this->jsonResponse([
                 'success' => true,
-                'message' => 'Event updated successfully.',
-                'redirect' => '/admin'
+                'message' => 'Event updated successfully.'
             ]);
         }
 
-        /* Redirect to the admin dashboard */
+        /* Store success feedback for normal form submissions */
+        $_SESSION['flash_message'] = 'Event updated successfully.';
+        $_SESSION['flash_type'] = 'success';
+
+        /* Fallback redirect for normal form submissions */
         return ['redirect' => '/admin'];
     }
 
-    /* Return edit form error as JSON for AJAX requests,
-    or fall back to a normal page render for non-JS users. */
-    private function updateError(string $message, int $eventid): array
-    {
-        if ($this->isAjaxRequest()) {
-            $this->jsonResponse([
-                'success' => false,
-                'message' => $message
-            ], 422);
-        }
-
-        $event = $this->events->findById($eventid);
-
-        return [
-            'title' => 'Edit Event',
-            'template' => 'editEvent.html.php',
-            'styles' => ['admin-form.css'],
-            'scripts' => ['editEvent.js'],
-            'variables' => [
-                'event' => $event,
-                'error' => $message
-            ]
-        ];
-    }
-
-    /* Detect whether the request came from JavaScript fetch/AJAX. */
-    private function isAjaxRequest(): bool
-    {
-        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
-    }
-
-    /* Send JSON output and stop further rendering. */
-    private function jsonResponse(array $data, int $statusCode = 200): void
-    {
-        http_response_code($statusCode);
-        header('Content-Type: application/json');
-        echo json_encode($data);
-        exit;
-    }
-
     /* Delete an event selected by the administrator */
-    public function delete(): ?array 
+    public function delete(): ?array
     {
         /* Ensure only admins can delete events */
         if ($result = $this->requireAdmin()) {
@@ -294,23 +396,17 @@ class AdminController
 
         /* Redirect if ID is missing */
         if (!$id) {
-            if (session_status() !== PHP_SESSION_ACTIVE) {
-                session_start();
-            }
             $_SESSION['flash_message'] = 'Event not found.';
             $_SESSION['flash_type'] = 'info';
-            
+
             return ['redirect' => '/admin'];
         }
 
         /* Confirm event exists before deletion */
-        $event = $this->events->findById((int)$id);
+        $event = $this->events->findById((int) $id);
 
         /* Redirect if event does not exist */
         if (!$event) {
-            if (session_status() !== PHP_SESSION_ACTIVE) {
-                session_start();
-            }
             $_SESSION['flash_message'] = 'Event not found.';
             $_SESSION['flash_type'] = 'info';
 
@@ -318,7 +414,11 @@ class AdminController
         }
 
         /* Remove event from the database */
-        $this->events->delete($id);
+        $this->events->delete((int) $id);
+
+        /* Store success feedback after deletion */
+        $_SESSION['flash_message'] = 'Event deleted successfully.';
+        $_SESSION['flash_type'] = 'success';
 
         /* Redirect back to the admin page */
         return ['redirect' => '/admin'];
@@ -359,17 +459,177 @@ class AdminController
             exit;
         }
 
+        /* Get the search term from the query string */
         $term = trim($_GET['q'] ?? '');
 
+        /* Retrieve either all events or matching events */
         $events = $term === ''
             ? $this->events->findAll()
             : $this->events->adminSearch($term);
 
+        /* Return matching events as JSON for the admin AJAX search */
         header('Content-Type: application/json');
         echo json_encode([
             'success' => true,
             'events' => $events
         ]);
         exit;
+    }
+
+    /* Render the create blog post form for administrators */
+    public function createBlog(): array
+    {
+        /* Ensure only admins can access the form */
+        if ($result = $this->requireAdmin()) {
+            return $result;
+        }
+
+        /* Return view for creating a new blog post */
+        return [
+            'title' => 'Create Blog Post',
+            'template' => 'createBlog.html.php',
+            'styles' => ['admin-form.css'],
+            'variables' => []
+        ];
+    }
+
+    /* Process the create blog post form submission */
+    public function storeBlog(): array
+    {
+        /* Ensure only admins can create blog posts */
+        if ($result = $this->requireAdmin()) {
+            return $result;
+        }
+
+        /* Retrieve form values from POST request */
+        $title = trim($_POST['title'] ?? '');
+        $category = trim($_POST['category'] ?? '');
+        $content = trim($_POST['content'] ?? '');
+
+        /* Return validation error if required fields are missing */
+        if ($title === '' || $category === '' || $content === '') {
+            return [
+                'title' => 'Create Blog Post',
+                'template' => 'createBlog.html.php',
+                'styles' => ['admin-form.css'],
+                'variables' => [
+                    'error' => 'All fields are required.'
+                ]
+            ];
+        }
+
+        /* Save the new blog post using the model */
+        $this->blogPosts->save([
+            'title' => $title,
+            'category' => $category,
+            'content' => $content
+        ]);
+
+        /* Store success feedback after creation */
+        $_SESSION['flash_message'] = 'Blog post created successfully.';
+        $_SESSION['flash_type'] = 'success';
+
+        /* Redirect back to the admin dashboard */
+        return ['redirect' => '/admin'];
+    }
+
+    /* Display the edit blog post form */
+    public function editBlog(): array
+    {
+        /* Ensure only admins can edit blog posts */
+        if ($result = $this->requireAdmin()) {
+            return $result;
+        }
+
+        /* Get blog post ID from the URL */
+        $id = $_GET['id'] ?? null;
+
+        /* Redirect if no blog post ID was provided */
+        if (!$id) {
+            $_SESSION['flash_message'] = 'Blog post not found.';
+            $_SESSION['flash_type'] = 'info';
+
+            return ['redirect' => '/admin'];
+        }
+
+        /* Retrieve the selected blog post from the database */
+        $post = $this->blogPosts->findById((int) $id);
+
+        /* Redirect if the blog post does not exist */
+        if (!$post) {
+            $_SESSION['flash_message'] = 'Blog post not found.';
+            $_SESSION['flash_type'] = 'info';
+
+            return ['redirect' => '/admin'];
+        }
+
+        /* Return edit form view with blog post data */
+        return [
+            'title' => 'Edit Blog Post',
+            'template' => 'editBlog.html.php',
+            'styles' => ['admin-form.css'],
+            'variables' => [
+                'post' => $post
+            ]
+        ];
+    }
+
+    /* Handle submission of edited blog post data */
+    public function updateBlog(): array
+    {
+        /* Ensure only admins can update blog posts */
+        if ($result = $this->requireAdmin()) {
+            return $result;
+        }
+
+        /* Get blog post ID from POST data */
+        $postid = (int) ($_POST['postid'] ?? 0);
+
+        /* Redirect if the blog post ID is missing */
+        if (!$postid) {
+            $_SESSION['flash_message'] = 'Blog post not found.';
+            $_SESSION['flash_type'] = 'info';
+
+            return ['redirect' => '/admin'];
+        }
+
+        /* Save updated blog post details using the model */
+        $this->blogPosts->save([
+            'postid' => $postid,
+            'title' => trim($_POST['title'] ?? ''),
+            'category' => trim($_POST['category'] ?? ''),
+            'content' => trim($_POST['content'] ?? '')
+        ]);
+
+        /* Store success feedback after update */
+        $_SESSION['flash_message'] = 'Blog post updated successfully.';
+        $_SESSION['flash_type'] = 'success';
+
+        /* Redirect back to the admin dashboard */
+        return ['redirect' => '/admin'];
+    }
+
+    /* Delete a blog post selected by the administrator */
+    public function deleteBlog(): array
+    {
+        /* Ensure only admins can delete blog posts */
+        if ($result = $this->requireAdmin()) {
+            return $result;
+        }
+
+        /* Get blog post ID from URL */
+        $id = $_GET['id'] ?? null;
+
+        /* Remove blog post from the database if an ID was provided */
+        if ($id) {
+            $this->blogPosts->delete((int) $id);
+        }
+
+        /* Store success feedback after deletion */
+        $_SESSION['flash_message'] = 'Blog post deleted successfully.';
+        $_SESSION['flash_type'] = 'success';
+
+        /* Redirect back to the admin dashboard */
+        return ['redirect' => '/admin'];
     }
 }

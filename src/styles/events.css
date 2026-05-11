@@ -31,7 +31,7 @@
 /* Grid layout for event cards */
 .events-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
   gap: 1.4rem;
 }
 
@@ -109,15 +109,37 @@
   color: var(--card-text-color);
 }
 
+.date-range-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.date-range-options input[type="date"] {
+  width: 100%;
+  padding: 0.55rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+}
+
+.filter-clear-btn {
+  padding: 0.55rem 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
 /*
   Horizontal event card layout
   Image on the left and event information on the right.
 */
 .card-event {
   display: grid;
-  grid-template-columns: 180px 1fr;
+  grid-template-columns: 45% 55%;
   gap: 0;
   align-items: stretch;
+  min-height: 280px;
+  overflow: hidden;
 }
 
 /* Event image styling */
@@ -130,9 +152,10 @@
 /* Event content container */
 .card-event .card-body {
   padding: var(--card-pad);
-  display: grid;
-  grid-template-rows: auto auto auto 1fr auto;
-  gap: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
 }
 
 /* Event date styling */
@@ -140,25 +163,116 @@
   font-size: 0.9rem;
   color: var(--card-text-color);
   opacity: 0.9;
+  margin: 0;
 }
 
 /* Event location styling */
 .card-event .card-text {
   font-size: 0.9rem;
+  margin: 0;
+}
+
+.card-description {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #333;
+  margin: 0.2rem 0 0.4rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Call-to-action link styled as button */
 .card-event .card-cta {
-  margin-top: 0.4rem;
+  margin-top: auto;
+  align-self: flex-start;
   border: 1px solid var(--card-border-color);
   border-radius: 8px;
-  padding: 4px 10px;
-  border-bottom: none;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--card-border-color);
+  background: #fff;
+  color: #222;
+  text-decoration: none;
 }
 
 /* Hover effect for CTA */
 .card-event .card-cta:hover {
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Event status card colours */
+.card.card-event {
+  border-left: 6px solid transparent;
+  overflow: hidden;
+}
+
+/* Upcoming = green */
+.card.card-event.event-status-upcoming,
+.card.card-event.event-status-upcoming .card-body {
+  border-left-color: #2e7d32;
+  background-color: #f1f8f2;
+}
+
+/* Starting soon = orange */
+.card.card-event.event-status-soon,
+.card.card-event.event-status-soon .card-body {
+  border-left-color: #ef8f00;
+  background-color: #fff7e6;
+}
+
+/* Closed = red */
+.card.card-event.event-status-closed,
+.card.card-event.event-status-closed .card-body {
+  border-left-color: #c62828;
+  background-color: #fff0f0;
+}
+
+/* Make text readable on the lighter card backgrounds */
+.card.card-event.event-status-upcoming .card-title,
+.card.card-event.event-status-upcoming .card-meta,
+.card.card-event.event-status-upcoming .card-text,
+.card.card-event.event-status-upcoming .card-description,
+.card.card-event.event-status-soon .card-title,
+.card.card-event.event-status-soon .card-meta,
+.card.card-event.event-status-soon .card-text,
+.card.card-event.event-status-soon .card-description,
+.card.card-event.event-status-closed .card-title,
+.card.card-event.event-status-closed .card-meta,
+.card.card-event.event-status-closed .card-text,
+.card.card-event.event-status-closed .card-description {
+  color: #222;
+}
+
+.card.card-event.event-status-closed {
+  opacity: 0.9;
+}
+
+/* Prevent long words/text from breaking layout */
+.card-event .card-title,
+.card-event .card-meta,
+.card-event .card-text,
+.card-event .card-description {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.card-event .card-title {
+  margin: 0;
+}
+
+/* Put badges neatly at the top */
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.badge-status {
+  background: #222;
+  color: #fff;
+  width: fit-content;
 }
 
 /* AJAX search feedback shown when there are no matching events or an error occurs */

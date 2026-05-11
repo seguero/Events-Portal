@@ -36,4 +36,7 @@ class EventModel
 
     /* Timestamp when the event record was created */
     public ?string $created_at = null;
+    
+    /* Number of bookings for this event, used by popular events */
+    public int $booking_count = 0;
 }

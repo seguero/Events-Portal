@@ -5,10 +5,6 @@ Author: Fonticons, Inc.
 Used for navbar and UI icons
 -->
 <!--
-Logo Flaticon.com
-https://www.flaticon.com/free-icon/billboard_1069071?term=event&page=3&position=77&origin=search&related_id=1069071
--->
-<!--
 To mitigate Cross-Site Scripting (XSS) vulnerabilities, all dynamic output is escaped using PHP’s htmlspecialchars() function, which converts special characters into HTML entities, preventing browser execution of injected scripts
 https://www.php.net/manual/en/function.htmlspecialchars.php
 https://owasp.org/www-community/attacks/xss/

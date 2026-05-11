@@ -11,7 +11,7 @@
         <p class="form-message error"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
 
-    <form id="createEventForm" class="admin-form" method="post" action="/admin/store">
+    <form id="createEventForm" class="admin-form" method="post" action="/admin/store" enctype="multipart/form-data">
 
         <!-- Message area used for inline success/error feedback without reloading the page. -->
         <p id="createEventMessage" class="form-message" aria-live="polite"></p>
@@ -39,6 +39,12 @@
         <div class="form-group">
             <label for="location">Location</label>
             <input type="text" id="location" name="location" required>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Event Image</label>
+            <input type="file" id="image" name="image" accept="image/jpeg, image/png, image/webp">
+            <small>Accepted formats: JPG, PNG, WEBP.</small>
         </div>
 
         <div class="form-group">

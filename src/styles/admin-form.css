@@ -113,3 +113,25 @@ Defines layout, spacing, and button styling for the admin interface.
   border: 1px solid #ffcdd2;
   color: #c62828;
 }
+
+@media (max-width: 700px) {
+  .admin-panel,
+  .blog-layout {
+    width: 100%;
+    max-width: none;
+    padding: 0 1rem;
+  }
+
+  .admin-form input,
+  .admin-form textarea,
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-actions a,
+  .form-actions button {
+    width: 100%;
+    text-align: center;
+  }
+}

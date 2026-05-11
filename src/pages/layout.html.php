@@ -57,8 +57,9 @@
     <!-- Main navigation:
          logo on the left, primary links in the middle, account pushed to the right -->
     <nav class="nav">
-      <a href="/home">
-        <img class="logo" src="../assets/logo.png" alt="Events Portal Logo" />
+      <a class="nav-item" href="/home">
+        <i class="fa-solid fa-house"></i>
+        <span class="nav-text">Home</span>
       </a>
 
       <a class="nav-item" href="/events">
@@ -74,6 +75,11 @@
       <a class="nav-item" href="/contact">
         <i class="fa-solid fa-envelope"></i>
         <span class="nav-text">Contact</span>
+      </a>
+
+      <a class="nav-item" href="/blog">
+        <i class="fa-solid fa-blog"></i>
+        <span class="nav-text">Blog</span>
       </a>
       <!-- Bookings Page
            If the user is logged in, display the bookings link -->
@@ -149,18 +155,36 @@
 
       <div class="newsletter-form">
         <span class="newsletter-text">Subscribe to our newsletter</span>
-        <label for="newsletter-email" class="newsletter-email-label"
-          >Email address</label
-        >
-        <form>
-          <input
-            type="email"
-            name="newsletter-email"
-            placeholder="Email Address"
-          />
-          <button type="submit" class="subscribe-submit">Subscribe</button>
+
+        <?php if (!empty($_SESSION['flash_message'])): ?>
+            <p class="newsletter-message <?= htmlspecialchars($_SESSION['flash_type'] ?? 'info') ?>">
+                <?= htmlspecialchars($_SESSION['flash_message']) ?>
+            </p>
+
+            <?php
+                unset($_SESSION['flash_message']);
+                unset($_SESSION['flash_type']);
+            ?>
+        <?php endif; ?>
+
+        <label for="newsletter-email" class="newsletter-email-label">
+            Email address
+        </label>
+
+        <form method="post" action="/subscriber/subscribe">
+            <input
+                id="newsletter-email"
+                type="email"
+                name="newsletter-email"
+                placeholder="Email Address"
+                required
+            >
+
+            <button type="submit" class="subscribe-submit">
+                Subscribe
+            </button>
         </form>
-      </div>
+    </div>
 
       <span class="copyright">
         &copy; 2026 CSYM019 Assignment - Sergiu Popa

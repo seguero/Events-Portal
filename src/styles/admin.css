@@ -7,8 +7,18 @@ and action button colours.
 
 /* Main container for the admin panel */
 .admin-panel {
-  max-width: 1000px;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+/* Main container for the admin dashboard */
+.admin-dashboard {
+  max-width: 1200px;
   margin: 2rem auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: start;
 }
 
 /* Header containing page title and add event button */
@@ -16,6 +26,7 @@ and action button colours.
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
@@ -26,6 +37,7 @@ and action button colours.
   padding: 0.5rem 1rem;
   text-decoration: none;
   border-radius: 5px;
+  white-space: nowrap;
 }
 
 /* Search input used to filter events */
@@ -41,6 +53,8 @@ and action button colours.
 .admin-table {
   width: 100%;
   border-collapse: collapse;
+  background: #fff;
+  min-width: 720px;
 }
 
 /* Table cell spacing and alignment */
@@ -48,6 +62,12 @@ and action button colours.
 .admin-table td {
   padding: 0.75rem;
   text-align: left;
+  white-space: nowrap;
+}
+
+/* Allow long titles to wrap instead of forcing the panel wider */
+.admin-table td:nth-child(2) {
+  white-space: normal;
 }
 
 /* Table header styling */
@@ -68,6 +88,7 @@ and action button colours.
 /* Container for edit/delete action icons */
 .actions {
   text-align: center;
+  white-space: nowrap;
 }
 
 /* Edit icon colour */
@@ -79,4 +100,34 @@ and action button colours.
 /* Delete icon colour */
 .delete {
   color: #d32f2f;
+}
+
+/* Flash message shown after admin actions */
+.admin-flash {
+  max-width: 1400px;
+  margin: 1rem auto 0;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Success flash message */
+.admin-flash.success {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border: 1px solid #a5d6a7;
+}
+
+/* Error flash message */
+.admin-flash.error {
+  background: #ffebee;
+  color: #b71c1c;
+  border: 1px solid #ef9a9a;
+}
+
+/* Info flash message */
+.admin-flash.info {
+  background: #e3f2fd;
+  color: #0d47a1;
+  border: 1px solid #90caf9;
 }

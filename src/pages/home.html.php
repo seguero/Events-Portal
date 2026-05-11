@@ -5,68 +5,50 @@
     using reusable card-based sections.
 -->
 
-<!-- Page header introducing the site -->
-<header class="page-header">
-    <h1>Welcome</h1>
-    <p>
-        Discover upcoming workshops, recent highlights, and the latest
-        updates.
-    </p>
-</header>
-
 <!-- Popular events section -->
 <section class="block" aria-labelledby="popular-heading">
     <div class="block-head">
         <h2 id="popular-heading">Popular events</h2>
-        <a class="block-link" href="events.html">View all</a>
+        <a class="block-link" href="/events">View all</a>
     </div>
 
     <!-- Featured event cards -->
     <div class="cards">
-        <article class="card">
-            <img
-                class="card-media"
-                src="../assets/placeholder.jpg"
-                alt="Event"
-            />
-            <div class="card-body">
-                <span class="badge">Event</span>
-                <h3 class="card-title">Title</h3>
-                <p class="card-meta">Tue 17 Feb · Northampton</p>
-                <p class="card-text">Event description</p>
-                <a class="card-cta" href="event.html">Read more</a>
-            </div>
-        </article>
+        <?php if (empty($popularEvents)): ?>
+            <p>No popular events available yet.</p>
+        <?php endif; ?>
 
-        <article class="card">
-            <img
-                class="card-media"
-                src="../assets/placeholder.jpg"
-                alt="Event 2"
-            />
-            <div class="card-body">
-                <span class="badge badge--accent">Event 2</span>
-                <h3 class="card-title">Title 2</h3>
-                <p class="card-meta">Wed 18 Feb - Wellingborough</p>
-                <p class="card-text">Event 2 description</p>
-                <a class="card-cta" href="event.html">Read more</a>
-            </div>
-        </article>
+        <?php foreach ($popularEvents as $event): ?>
+            <article class="card">
+                <img
+                    class="card-media"
+                    src="<?= !empty($event->image_path) ? htmlspecialchars($event->image_path) : '/assets/placeholder.jpg' ?>"
+                    alt="<?= htmlspecialchars($event->title) ?>"
+                />
 
-        <article class="card">
-            <img
-                class="card-media"
-                src="../assets/placeholder.jpg"
-                alt="Event 3"
-            />
-            <div class="card-body">
-                <span class="badge">Event 3</span>
-                <h3 class="card-title">Title 3</h3>
-                <p class="card-meta">Thu 19 Feb - Kettering</p>
-                <p class="card-text">Event 3 description</p>
-                <a class="card-cta" href="event.html">Read more</a>
-            </div>
-        </article>
+                <div class="card-body">
+                    <span class="badge"><?= htmlspecialchars($event->event_type) ?></span>
+
+                    <h3 class="card-title"><?= htmlspecialchars($event->title) ?></h3>
+
+                   <p class="card-meta">
+                        <?= date('d M Y, H:i', strtotime($event->event_date)) ?>
+                        ·
+                        <?= htmlspecialchars($event->location) ?>
+                        ·
+                        <?= (int) ($event->booking_count ?? 0) ?> bookings
+                    </p>
+
+                    <p class="card-text">
+                        <?= htmlspecialchars($event->description) ?>
+                    </p>
+
+                    <a class="card-cta" href="/events/show/<?= htmlspecialchars($event->eventid) ?>">
+                        Read more
+                    </a>
+                </div>
+            </article>
+        <?php endforeach; ?>
     </div>
 </section>
 
@@ -74,28 +56,36 @@
 <section class="block" aria-labelledby="latest-heading">
     <div class="block-head">
         <h2 id="latest-heading">Latest events</h2>
-        <a class="block-link" href="events.html?sort=latest">See recent</a>
+        <a class="block-link" href="/events?sort=newest">See recent</a>
     </div>
 
     <!-- Compact cards for recently added events -->
     <div class="cards cards--compact">
-        <article class="card card--row">
-            <div class="card-body">
-                <h3 class="card-title">Latest Event 1</h3>
-                <p class="card-meta">Added x days ago</p>
-                <p class="card-text">Latest Event 1 description</p>
-                <a class="card-cta" href="event.html">Read more</a>
-            </div>
-        </article>
+        <?php if (empty($latestEvents)): ?>
+            <p>No latest events available yet.</p>
+        <?php endif; ?>
 
-        <article class="card card--row">
-            <div class="card-body">
-                <h3 class="card-title">Latest Event 2</h3>
-                <p class="card-meta">Added x days ago</p>
-                <p class="card-text">Latest Event 2 description</p>
-                <a class="card-cta" href="event.html">Read more</a>
-            </div>
-        </article>
+        <?php foreach ($latestEvents as $event): ?>
+            <article class="card card--row">
+                <div class="card-body">
+                    <span class="badge"><?= htmlspecialchars($event->event_type) ?></span>
+
+                    <h3 class="card-title"><?= htmlspecialchars($event->title) ?></h3>
+
+                    <p class="card-meta">
+                        Added recently · <?= date('d M Y, H:i', strtotime($event->event_date)) ?>
+                    </p>
+
+                    <p class="card-text">
+                        <?= htmlspecialchars($event->description) ?>
+                    </p>
+
+                    <a class="card-cta" href="/events/show/<?= htmlspecialchars($event->eventid) ?>">
+                        Read more
+                    </a>
+                </div>
+            </article>
+        <?php endforeach; ?>
     </div>
 </section>
 
@@ -103,19 +93,49 @@
 <section class="block" aria-labelledby="blog-heading">
     <div class="block-head">
         <h2 id="blog-heading">Blog updates</h2>
-        <a class="block-link" href="blog.html">All blog posts</a>
+        <a class="block-link" href="/blog">All blog posts</a>
     </div>
 
     <!-- Blog update card -->
     <div class="cards">
-        <article class="card">
-            <div class="card-body">
-                <span class="badge">Update</span>
-                <h3 class="card-title">Update x.x</h3>
-                <p class="card-meta">17 Feb 2026</p>
-                <p class="card-text">Blog update</p>
-                <a class="card-cta" href="blog.html">Read more</a>
-            </div>
-        </article>
+        <?php if (!empty($latestBlogPosts)): ?>
+            <?php foreach ($latestBlogPosts as $post): ?>
+                <article class="card">
+                    <div class="card-body">
+                        <span class="badge">
+                            <?= htmlspecialchars($post->category) ?>
+                        </span>
+
+                        <h3 class="card-title">
+                            <?= htmlspecialchars($post->title) ?>
+                        </h3>
+
+                        <p class="card-meta">
+                            <?= date('d M Y', strtotime($post->created_at)) ?>
+                        </p>
+
+                        <p class="card-text">
+                            <?= htmlspecialchars(mb_strimwidth($post->content, 0, 180, '...')) ?>
+                        </p>
+
+                        <a class="card-cta" href="/blog/show?id=<?= htmlspecialchars($post->postid) ?>">
+                            Read more
+                        </a>
+                    </div>
+                </article>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <article class="card">
+                <div class="card-body">
+                    <span class="badge">Update</span>
+                    <h3 class="card-title">No blog updates yet</h3>
+                    <p class="card-meta"><?= date('d M Y') ?></p>
+                    <p class="card-text">
+                        Blog updates will appear here once an admin creates a post.
+                    </p>
+                    <a class="card-cta" href="/blog">View blog</a>
+                </div>
+            </article>
+        <?php endif; ?>
     </div>
 </section>
