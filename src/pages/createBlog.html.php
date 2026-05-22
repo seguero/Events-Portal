@@ -34,7 +34,7 @@
                 <i class="fa-solid fa-check"></i> Save Post
             </button>
 
-            <a href="/admin/blog" class="btn-cancel">
+            <a href="/admin" class="btn-cancel">
                 Cancel
             </a>
         </div>

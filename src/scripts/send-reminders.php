@@ -15,10 +15,18 @@ use framework\EmailService;
 echo "Reminder script started\n"; 
 
 /*
- * Reminder sender script
+ * Reminder sender script using Cron
  *
  * Finds all bookings for events starting within the next 24 hours
  * and sends reminder emails if they have not already been sent.
+ *
+ * This file is designed to be executed by the server's cron scheduler,
+ * in this case once per minute for testing purposes, 
+ * to send reminder emails for events happening within the next 24 hours.
+ *
+ * Cron is an operating-system scheduling tool, not a PHP library.
+ * Reference: https://man7.org/linux/man-pages/man5/crontab.5.html
+
  */
 
 $bookingTable = new BookingTable();

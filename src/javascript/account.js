@@ -1,8 +1,9 @@
 /*
  * Account Tabs Script
  *
- * Controls the tab switching between the login and register forms
- * on the account page without reloading the page.
+ * This script is responsible for handling the tab switching and AJAX form submission
+ * on the account page. It allows users to switch between the login and registration
+ * forms and it submits using fetch to provide instant feedback
  */
 
 document.addEventListener("DOMContentLoaded", () => {

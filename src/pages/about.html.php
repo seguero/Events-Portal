@@ -123,6 +123,7 @@
                         events are added to the system, keeping them informed about upcoming opportunities.
                     </p>
                 </div>
+            </article>
         </div>
     </section>
 

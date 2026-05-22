@@ -6,11 +6,15 @@ use PHPMailer\PHPMailer\Exception;
 
 /*
  * EmailService
- *
+ * External library: PHPMailer
+ * Installed using Composer.
+ * Used only for SMTP email sending.
+ * Source: https://github.com/PHPMailer/PHPMailer
  * Handles email sending with PHPMailer.
  * A shared layout is used so confirmation and reminder emails
  * have a consistent and professional appearance.
- */
+*/
+
 class EmailService
 {
     private PHPMailer $mail;

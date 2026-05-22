@@ -77,8 +77,8 @@
 
                 <div class="filter-options">
                     <select name="sort" class="filter-select">
-                        <option value="date">Date</option>
                         <option value="newest">Newest</option>
+                        <option value="date">Date</option>
                         <option value="location">Location</option>
                     </select>
                 </div>

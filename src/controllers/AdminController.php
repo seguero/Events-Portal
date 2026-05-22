@@ -48,6 +48,7 @@ class AdminController
             'title' => 'Admin',
             'template' => 'admin.html.php',
             'styles' => ['admin.css'],
+            'scripts' => ['admin.js'],
             'variables' => [
                 'events' => $eventList,
                 'posts' => $postList

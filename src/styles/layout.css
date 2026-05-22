@@ -104,11 +104,6 @@ nav {
   transform: translateY(3px);
 }
 
-/* Main content area */
-main {
-  background: rgb(255, 255, 255);
-}
-
 /* Footer layout:
    stacked vertically and centered */
 footer {

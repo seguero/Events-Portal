@@ -47,22 +47,34 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       });
 
-      const data = await response.json();
+      const text = await response.text();
 
-      if (data.success) {
-        showMessage(data.message + " Redirecting...", "success");
+      let data;
 
-        setTimeout(() => {
-          window.location.href = data.redirect || "/admin";
-        }, 1500);
-      } else {
-        showMessage(data.message || "Unable to save event.", "error");
+      try {
+        data = JSON.parse(text);
+      } catch (error) {
+        console.error("Invalid server response:", text);
+        showMessage(
+          "Server returned an invalid response. Check the console.",
+          "error",
+        );
+        return;
       }
+
+      if (!response.ok || !data.success) {
+        showMessage(data.message || "Unable to save event.", "error");
+        return;
+      }
+
+      showMessage(data.message + " Redirecting...", "success");
+
+      setTimeout(() => {
+        window.location.href = data.redirect || "/admin";
+      }, 1500);
     } catch (error) {
+      console.error(error);
       showMessage("Server could not be reached. Please try again.", "error");
-    } finally {
-      submitButton.disabled = false;
-      submitButton.innerHTML = originalButtonText;
     }
   });
 });

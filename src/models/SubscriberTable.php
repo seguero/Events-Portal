@@ -57,12 +57,4 @@ class SubscriberTable
         ]);
     }
 
-    /* Reactivate an existing subscriber */
-    public function reactivate(int $subscriberid): void
-    {
-        $this->table->save([
-            'subscriberid' => $subscriberid,
-            'is_active' => 1
-        ]);
-    }
 }

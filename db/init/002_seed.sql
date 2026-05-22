@@ -1,7 +1,7 @@
 -- 002_seed.sql
+
 -- Inserts 1 admin user + a few events for testing.
 -- Hash generated with password_hash('Admin123!', PASSWORD_DEFAULT);
-
 -- ADMIN USER (role=admin)
 INSERT INTO users (firstname, lastname, email, password, role)
 VALUES (
@@ -15,9 +15,9 @@ VALUES (
 -- DUMMY EVENTS
 INSERT INTO events (category, event_type, title, description, event_date, location, image_path)
 VALUES
-('Web Development','Workshop','Web Development Workshop', 'Hands-on workshop covering modern PHP structure and routing.', '2026-05-10 18:00:00', 'Northampton', '/assets/Web Development.jpg'),
-('Server side development','Webinar','Docker for Beginners', 'Learn container basics and how to run reproducible dev environments.', '2026-07-15 17:30:00', 'Wellingborough', '/assets/Docker.jpg'),
-('Internet Security','Conference','Web App Security Basics', 'Intro to common vulnerabilities like XSS and how to mitigate them.', '2026-06-20 19:00:00', 'Kettering', '/assets/Web Security.jpg');
+('Web Development','Workshop','Web Development Workshop', 'Hands-on workshop covering modern PHP structure and routing.', '2026-05-10 18:00:00', 'Northampton', '/assets/Web Development.png'),
+('Server side development','Webinar','Docker for Beginners', 'Learn container basics and how to run reproducible dev environments.', '2026-07-15 17:30:00', 'Wellingborough', '/assets/Docker.png'),
+('Internet Security','Conference','Web App Security Basics', 'Intro to common vulnerabilities like XSS and how to mitigate them.', '2026-06-20 19:00:00', 'Kettering', '/assets/Web Security.png');
 
 -- PROGRESS BLOG POSTS
 INSERT INTO blog_posts (title, category, content, image_path, created_at)

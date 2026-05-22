@@ -35,13 +35,13 @@
 
 /* "View all" style links */
 .block-link {
-  color: var(--card-secondary-color);
+  color: var(--card-panel-color);
   text-decoration: none;
   font-size: 0.95rem;
 }
 
 .block-link:hover {
-  color: var(--card-text-color);
+  color: var(--card-secondary-color);
 }
 
 /* 
@@ -78,9 +78,11 @@
 /* Event thumbnail image */
 .card-media {
   width: 100%;
-  height: 160px;
-  object-fit: cover; /* avoids image distortion */
+  height: 256px;
+  object-fit: contain; /* avoids image distortion */
   display: block;
+  background: white;
+  border-radius: 12px;
 }
 
 /* Internal content wrapper */

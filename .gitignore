@@ -2,6 +2,7 @@
 .env
 
 # Dependencies
+src/vendor
 /vendor/
 /node_modules/
 

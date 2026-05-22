@@ -1,5 +1,5 @@
 -- 001_schema.sql
--- Creates the core tables for users, events, and bookings.
+-- Creates the core tables for users, events, bookings, blog posts, and subscribers.
 
 CREATE TABLE IF NOT EXISTS users (
   userid INT AUTO_INCREMENT PRIMARY KEY,

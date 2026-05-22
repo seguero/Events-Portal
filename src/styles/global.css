@@ -25,7 +25,9 @@ body {
     Roboto,
     Arial,
     sans-serif;
-  background: var(--bg);
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.01), rgba(0, 0, 0, 0.02)),
+    url("../assets/bg.jpg") center / cover no-repeat fixed;
   overflow-x: hidden;
 }
 

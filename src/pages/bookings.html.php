@@ -105,7 +105,7 @@
 
                         <!-- Link to view the original event -->
                         <div class="booking-actions">
-                            <a class="view-button" href="/event/show/<?= htmlspecialchars($booking->eventid) ?>">
+                            <a class="view-button" href="/events/show/<?= htmlspecialchars($booking->eventid) ?>">
                                 View Event
                             </a>
                         </div>
